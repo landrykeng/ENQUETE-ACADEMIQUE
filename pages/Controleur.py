@@ -850,19 +850,7 @@ def main():
             upload_bt=st.button("Mettre à jour")
             if upload_bt:
                 with st.spinner("Téléchargement des nouvelles données...",show_time=True):
-                    All_data, geo_data, last_update =load_data()
-                    #All_data["Date"]=All_data["Date"].dt.date
-        
-                    All_data["Superviseur"] = "S_" + All_data["Superviseur"].astype(str)
-                    All_data["Enqueteur"] = "E_" + All_data["Enqueteur"].astype(str)
-                    All_data["Temp"]=round((All_data["Heure fin"]-All_data["Heure debut"])/60,2)
-                    
-                    All_data['Total_enfa'] = np.where(All_data['Type'] == 'Enfant', 1, 0)
-                    All_data['Total_ense'] = np.where(All_data['Type'] == 'Enseignant', 1, 0)
-                    
-                    rep_region=pd.DataFrame(data_rep["SRegion"].value_counts())
-                    rep_sup=pd.DataFrame(data_rep["SUP"].value_counts())
-                    st.success("Mise à jour effectuée.")
+                    pass
         with col_fonfig[1]:
             st.markdown(f"""
                 <div style="
