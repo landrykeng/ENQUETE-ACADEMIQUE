@@ -1,0 +1,213 @@
+﻿Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      09:59:32
+End Time        09:59:32
+
+
+***  has 1 message (0 E / 0 W / 0 U)
+    A    1010 Application error: protected field MS00Q08 is out of range - value is  NOTAPPL
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      10:00:05
+End Time        10:00:05
+
+
+***  has 1 message (0 E / 0 W / 0 U)
+    A    1010 Application error: protected field MS00Q08 is out of range - value is  NOTAPPL
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      10:00:08
+End Time        10:00:08
+
+
+***  has 1 message (0 E / 0 W / 0 U)
+    A    1010 Application error: protected field MS00Q08 is out of range - value is  NOTAPPL
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      10:00:11
+End Time        10:00:11
+
+
+***  has 1 message (0 E / 0 W / 0 U)
+    A    1010 Application error: protected field MS00Q08 is out of range - value is  NOTAPPL
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      10:00:14
+End Time        10:00:14
+
+
+***  has 1 message (0 E / 0 W / 0 U)
+    A    1010 Application error: protected field MS00Q08 is out of range - value is  NOTAPPL
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      11:34:25
+End Time        11:40:05
+
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     240           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      12:38:27
+End Time        12:42:23
+
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     245           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      12:46:51
+End Time        12:46:57
+
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      12:47:01
+End Time        12:47:54
+
+
+User numbered messages:
+
+  Number        Freq    %    Message Text                                                                          Denom
+  ------        ----  -----  ------------                                                                          -----
+       2           1      -  Le numéro de téléphone %d n'est pas correct                                               -
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     245           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      13:36:48
+End Time        13:37:11
+
+
+User numbered messages:
+
+  Number        Freq    %    Message Text                                                                          Denom
+  ------        ----  -----  ------------                                                                          -----
+       1           1      -  Nom trop court                                                                            -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      13:37:13
+End Time        13:39:37
+
+
+User numbered messages:
+
+  Number        Freq    %    Message Text                                                                          Denom
+  ------        ----  -----  ------------                                                                          -----
+       1           1      -  Nom trop court                                                                            -
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     245           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/MAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/MA1813.csdb
+
+Date            May 10, 2025
+Start Time      13:39:39
+End Time        13:40:02
+
+
+User numbered messages:
+
+  Number        Freq    %    Message Text                                                                          Denom
+  ------        ----  -----  ------------                                                                          -----
+       1           1      -  Nom trop court                                                                            -
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     245           2      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------

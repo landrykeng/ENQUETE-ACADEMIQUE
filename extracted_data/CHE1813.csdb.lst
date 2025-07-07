@@ -1,0 +1,150 @@
+﻿Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/CHEFFERIE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/CHE1813.csdb
+
+Date            May 10, 2025
+Start Time      10:08:57
+End Time        10:08:57Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/CHEFFERIE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/CHE1813.csdb
+
+Date            May 10, 2025
+Start Time      11:15:27
+End Time        11:24:32
+
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     445           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/CHEFFERIE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/CHE1813.csdb
+
+Date            May 10, 2025
+Start Time      13:08:44
+End Time        13:16:25
+
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     447           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/CHEFFERIE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/CHE1813.csdb
+
+Date            May 10, 2025
+Start Time      13:40:28
+End Time        13:41:16
+
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/CHEFFERIE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/CHE1813.csdb
+
+Date            May 10, 2025
+Start Time      13:41:19
+End Time        13:41:52
+
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/CHEFFERIE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/CHE1813.csdb
+
+Date            May 10, 2025
+Start Time      13:42:00
+End Time        13:42:28
+
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     447           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/CHEFFERIE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/CHE1813.csdb
+
+Date            May 10, 2025
+Start Time      13:42:30
+End Time        13:43:18
+
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     447           2      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/CHEFFERIE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/CHE1813.csdb
+
+Date            May 10, 2025
+Start Time      13:45:02
+End Time        13:45:32
+
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/CHEFFERIE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/CHE1813.csdb
+
+Date            May 10, 2025
+Start Time      13:45:36
+End Time        13:45:57
+
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/CHEFFERIE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/CHE1813.csdb
+
+Date            May 10, 2025
+Start Time      13:47:43
+End Time        13:48:02
+
+
+System messages:
+
+  Number        Freq         Message Text                                                                               
+  ------        ----         ------------                                                                               
+   91187           1         Unable to 'reenter %s' - target-item field is a never-keyed field {in %p}                  
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     447           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------

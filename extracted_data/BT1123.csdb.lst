@@ -1,0 +1,32 @@
+﻿Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/ARSEL2025/MASQUE/ENTRY/ENEO_BT.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/ARSEL2025/MASQUE/DATA/BT1123.csdb
+
+Date            Sep 14, 2023
+Start Time      08:30:42
+End Time        10:37:14
+
+
+System messages:
+
+  Number        Freq         Message Text                                                                               
+  ------        ----         ------------                                                                               
+   88889           1         ATTENTION: Hors valeurs valides! Entrer une valeur valide pour %s%s                        
+   99990           1         Operator entered a value out of range                                                      
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     377           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/ARSEL2025/MASQUE/ENTRY/ENEO_BT.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/ARSEL2025/MASQUE/DATA/BT1123.csdb
+
+Date            May 07, 2025
+Start Time      10:37:36
+End Time        10:37:36

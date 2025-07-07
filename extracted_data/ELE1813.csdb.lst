@@ -1,0 +1,114 @@
+﻿Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/ELEVE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/ELE1813.csdb
+
+Date            May 10, 2025
+Start Time      10:01:25
+End Time        10:06:40
+
+
+User numbered messages:
+
+  Number        Freq    %    Message Text                                                                          Denom
+  ------        ----  -----  ------------                                                                          -----
+       1           1      -  Nom trop court                                                                            -
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     376           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/ELEVE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/ELE1813.csdb
+
+Date            May 10, 2025
+Start Time      10:07:10
+End Time        10:08:20
+
+
+User numbered messages:
+
+  Number        Freq    %    Message Text                                                                          Denom
+  ------        ----  -----  ------------                                                                          -----
+       1           2      -  Nom trop court                                                                            -
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     376           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/ELEVE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/ELE1813.csdb
+
+Date            May 10, 2025
+Start Time      12:22:52
+End Time        12:23:46
+
+
+User numbered messages:
+
+  Number        Freq    %    Message Text                                                                          Denom
+  ------        ----  -----  ------------                                                                          -----
+       1           1      -  Nom trop court                                                                            -
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     378           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/ELEVE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/ELE1813.csdb
+
+Date            May 10, 2025
+Start Time      12:25:58
+End Time        12:28:23
+
+
+User numbered messages:
+
+  Number        Freq    %    Message Text                                                                          Denom
+  ------        ----  -----  ------------                                                                          -----
+       1           1      -  Nom trop court                                                                            -
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     378           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/ELEVE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/ELE1813.csdb
+
+Date            May 10, 2025
+Start Time      13:28:07
+End Time        13:32:38
+
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     378           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------

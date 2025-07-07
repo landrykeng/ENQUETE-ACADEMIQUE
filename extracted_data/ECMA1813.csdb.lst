@@ -1,0 +1,104 @@
+﻿Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/ECMAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/ECMA1813.csdb
+
+Date            May 10, 2025
+Start Time      11:44:46
+End Time        11:54:25
+
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/ECMAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/ECMA1813.csdb
+
+Date            May 10, 2025
+Start Time      11:54:56
+End Time        12:04:38
+
+
+System messages:
+
+  Number        Freq         Message Text                                                                               
+  ------        ----         ------------                                                                               
+   88889           2         ATTENTION: Hors valeurs valides! Entrer une valeur valide pour %s%s                        
+   99990           2         Operator entered a value out of range                                                      
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     447           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/ECMAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/ECMA1813.csdb
+
+Date            May 10, 2025
+Start Time      12:45:08
+End Time        12:45:58
+
+
+User numbered messages:
+
+  Number        Freq    %    Message Text                                                                          Denom
+  ------        ----  -----  ------------                                                                          -----
+       2           1      -  Le numéro de téléphone %d n'est pas correct                                               -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/ECMAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/ECMA1813.csdb
+
+Date            May 10, 2025
+Start Time      12:48:27
+End Time        12:48:50
+
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     449           1      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
+Application     /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/ENTRY/ECMAIRE.ent
+Type            ENTRY
+Input Data      <<CSPro DB>> /storage/emulated/0/Android/data/gov.census.cspro.csentry/files/csentry/FEICOM2025/MASQUE/DATA/ECMA1813.csdb
+
+Date            May 10, 2025
+Start Time      12:48:54
+End Time        13:08:06
+
+
+System messages:
+
+  Number        Freq         Message Text                                                                               
+  ------        ----         ------------                                                                               
+   88889           1         ATTENTION: Hors valeurs valides! Entrer une valeur valide pour %s%s                        
+   99990           1         Operator entered a value out of range                                                      
+
+User numbered messages:
+
+  Number        Freq    %    Message Text                                                                          Denom
+  ------        ----  -----  ------------                                                                          -----
+       2           1      -  Le numéro de téléphone %d n'est pas correct                                               -
+
+User unnumbered messages:
+
+    Line        Freq    %    Message Text                                                                          Denom
+    ----        ----  -----  ------------                                                                          -----
+     449           2      -  Votre questionnaire a été bien enregistré                                                 -
+
+
+CSPro Executor Normal End
+------------------------------------------------------------------------------------------------------------------------
