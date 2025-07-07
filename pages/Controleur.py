@@ -799,7 +799,7 @@ def main():
         All_data, data_rep, rep_region, rep_sup = load_data2()
        
         enq_data=pd.read_excel("Simulation.xlsx",sheet_name="Données Collectées")
-        
+        enq_data["date_collecte"]=enq_data["date_collecte"].dt.date
         
         enq_data_rep=pd.read_excel("Simulation.xlsx",sheet_name="Distribution Ménages")
         C_enq_data=enq_data[enq_data["id_controleur"]==user]
@@ -874,7 +874,7 @@ def main():
         
         
         #Table de donneés
-        #C_enq_data
+        C_enq_data
         
         
         
@@ -993,20 +993,22 @@ def main():
                 create_categorical_map(geo_data_rep_to_plot, lat_col="latitude", lon_col="longitude", category_col="id_enqueteur", 
                           center_lat=None, center_lon=None, zoom_start=12,
                           popup_cols=None, tooltip_cols=None)
-            
         with tabs[1]:
             col1=st.columns([1,1])
             with col1[0]:
                 sbcl=st.columns([1,1])
                 with sbcl[0]:
                     select_enq=st.selectbox(traduire_texte("Sélectionner le Superviseur",lang),C_enq_data["id_enqueteur"].unique())
-                    data_superviz=All_data[All_data["Superviseur"]==select_enq]   
-                    
+                    data_select_enq=C_enq_data[C_enq_data["id_enqueteur"]==select_enq]   
+
                     display_single_metric_advanced(" Total", 12, delta=round(100*0.678 , 2), color_scheme="teal")
                 st.write("")
+                avrg_time=data_select_enq["temps_remplissage"].mean()
+                st.subheader(traduire_texte(f"Temps moyen de remplissage: {round(avrg_time)} min",lang)) 
                 with sbcl[1]:
                    make_progress_char(0.678,couleur="",titre=traduire_texte("Progression de la collecte",lang))
-                   
+            st.write("")
+            
                 
                 
             st.write("")
@@ -1021,9 +1023,10 @@ def main():
             with tcol[0]:
                 enq_for_heat_map=st.multiselect(traduire_texte("Sélectionner un (des) enquêteur (s)",lang),C_enq_data["id_enqueteur"].unique(),default=C_enq_data["id_enqueteur"].unique(), key="Enq_for_map")
             with tcol[1]:
-                enq_type=st.multiselect(traduire_texte("Sélectionner un type de questionnaire",lang),data_to_plot["Type"].unique(), default=data_to_plot["Type"].unique()[1])
-            data_superviz_heat_map=data_to_plot[(data_to_plot["Enqueteur"].isin(enq_for_heat_map)) & (data_to_plot["Type"].isin(enq_type))]
-            cross_enq=pd.crosstab(data_superviz_heat_map["Enqueteur"],data_superviz_heat_map["Date"])
+                pass
+                #enq_type=st.multiselect(traduire_texte("Sélectionner un type de questionnaire",lang),data_to_plot["Type"].unique(), default=data_to_plot["Type"].unique()[1])
+            data_superviz_heat_map=C_enq_data[(C_enq_data["id_enqueteur"].isin(enq_for_heat_map))]
+            cross_enq=pd.crosstab(data_superviz_heat_map["id_enqueteur"],data_superviz_heat_map["date_collecte"])
             make_st_heatmap_echat2(cross_enq,title=traduire_texte("Charge de travail accomplie par enquêteur",lang)) if data_superviz_heat_map.shape[0]>0 else None
             
             
