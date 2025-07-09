@@ -687,7 +687,8 @@ def main():
 
         data_rep=pd.read_excel("Repartition.xlsx",sheet_name="Repatition")
         data_rep['arrondissement'] = data_rep['arrondissement'].str.replace('Yaounde', 'Yaoundé', regex=False)
-        
+        data["Rejets_superviseur"]=data["Rejets_superviseur"].map({1:"Rejeté par les controleur", 0: "Approuvé par le Controleur"})
+        data["Rejets_siege"]=data["Rejets_siege"].map({1:"Rejeté par le QG", 0: "Approuvé par le QG"})
         
         
 
@@ -769,8 +770,6 @@ def main():
             st.image(logo2,caption="",width=165)
         la_date=st.sidebar.date_input(traduire_texte("Sélectionner la date de collecte",lang),dt.datetime(2025, 5, 20).date(),min_value=dt.datetime(2023, 1, 1).date(),max_value=dt.datetime(2025, 12, 31).date())
 
-        data
-        data_rep
         tabs = st.tabs([
             f"📈 {traduire_texte('ANALYSE GENERALE', lang)}", 
             f"📊 {traduire_texte('PERFORMANCE ET QUALITE DES DONNEES', lang)}"
@@ -778,7 +777,9 @@ def main():
         
         with tabs[0]:
             with st.expander("Description des indicateurs"):
-                st.subheader("1. Taux de localisation des ménages: Donne la proportion des ménages dont les coordonnées g'géographique ont été collectées")
+                st.subheader("1. Taux de localisation des ménages: Donne la proportion des ménages dont les coordonnées géographiques ont été collectées")
+            
+            st.title("SECTION1: STATISTIQUES SUR LES QUESTIONNAIRES SOUMIS")
             ca=st.columns(3)
             
             nb_tontine = (data['Questionnaire'] == 'Tontine').sum()
@@ -844,45 +845,73 @@ def main():
                     
             with col[1]:
                 
-                make_multi_progress_bar(data_arr['arrondissement'],data_arr['progression'],colors=palette[0:11],titre=traduire_texte("Progression par Enqueteur",lang),height=700)
+                make_multi_progress_bar(data_arr['arrondissement'],data_arr['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=700)
 
-            cl_config_cart=st.columns([1,1,1,2])
-            with cl_config_cart[0]:
-                opacity=st.slider(traduire_texte("Opacité de la carte",lang), 0.0, 1.0, value=0.5)
-            with cl_config_cart[1]:  
-                pass
-                #type_questionnaire=st.selectbox("Type de Questionnaire", options=All_data["Type"].unique())
-            with cl_config_cart[2]:
-                style_carte=st.selectbox(traduire_texte("Style de la carte",lang), ["carto-positron", "carto-darkmatter", "open-street-map", "CartoDB positron", "CartoDB dark_matter"])  
-            with cl_config_cart[3]:
-                arr=st.multiselect(traduire_texte("Sélectionner les enqueteurs",lang), options=data["arrondissement"].unique(), default=data["arrondissement"].unique())
+            st.title("SECTION 2: STATISTIQUES SUR LES QUESTIONNAIRES VALIDES PAR LE QG")
+            data_qg=data[data["Rejets_siege"]=="Approuvé par le QG"]
+            ca2=st.columns(3)
+            nb_tontine_qg = (data_qg['Questionnaire'] == 'Tontine').sum()
+            nb_dechet_qg = (data_qg['Questionnaire'] == 'Dechet').sum()
             
+            rep_tontine_qg=(data_rep['questionnaire'] == 'Tontine').sum()
+            rep_dechet_qg=(data_rep['questionnaire'] == 'Dechet').sum()
+            
+            with ca2[0]:
+                display_single_metric_advanced(" 💰Tontine",nb_tontine_qg, delta=round(100*nb_tontine_qg/rep_tontine_qg,2), color_scheme="blue")
+            with ca2[1]:
+                display_single_metric_advanced(" 🗑️ dechet menagers", nb_dechet_qg, delta=round(100*nb_dechet_qg/rep_dechet_qg,2), color_scheme="green")
+            with ca2[2]:
+                display_single_metric_advanced("Total", nb_dechet_qg+nb_tontine_qg, delta=round(100*(nb_dechet_qg+nb_tontine_qg)/(rep_tontine_qg+rep_dechet_qg),2), color_scheme="orange")
+            st.write('')  
+            
+            c2=st.columns(2)
+            
+            with c2[0]:
+                Type_questionnaire2=st.multiselect("Thème de l'enquête", options=data["Questionnaire"].unique(),default=data["Questionnaire"].unique(),key="Type2")
+                df_to_plot=df_to_plot[df_to_plot["Questionnaire"].isin(Type_questionnaire2)]
+                create_crossed_bar_chart(df_to_plot, "arrondissement", "Rejets_superviseur", title="Diagramme des validation", colors=["orange","red"],width="100%", height="500px",orientation="vertical",)
+            with c2[1]:
+                create_crossed_bar_chart(df_to_plot, "arrondissement", "Rejets_siege", title="Diagramme des validation", colors=["green","red"],width="100%", height="500px",orientation="vertical",)
+            
+            
+            
+            
+            
+            
+            arr=st.multiselect(traduire_texte("Sélectionner les arrondissement",lang), options=data["arrondissement"].unique(), default=data["arrondissement"].unique())
+            
+            df_qg=data_qg[data_qg["Questionnaire"].isin(Type_questionnaire2)]
+            a_test=pd.DataFrame(df_qg["arrondissement"].value_counts())
+            b_test=pd.DataFrame(df_rep_to_plot["arrondissement"].value_counts())
+                        
+            # Agrégation des deux tables a_test et b_test sur "id_enqueteur"
+            data_arr_qg = a_test.join(b_test, how="outer", lsuffix="_collecte", rsuffix="_distribution")
+            data_arr_qg.reset_index(inplace=True)
+            data_arr_qg.rename(columns={"index": "arrondissement"}, inplace=True)
+                        # Ajout de la colonne progression
+            data_arr_qg["count_collecte"] = data_arr_qg["count_collecte"].fillna(0)
+            data_arr_qg["progression"] = data_arr_qg["count_collecte"] / (data_arr_qg["count_distribution"] )
             col_map=st.columns(2)
             with col_map[0]:
                 # Données de points
-                geo_data_to_plot= geo_data[geo_data["arrondissement"].isin(arr) ]
-                st.subheader(traduire_texte("Carte de la position des ménages enquétés",lang))
-                #create_categorical_map(geo_data_to_plot, lat_col="Latitude_collected", lon_col="Longitude_collected", category_col="id_enqueteur", 
-                          #center_lat=None, center_lon=None, zoom_start=16,
-                          #popup_cols=None, tooltip_cols=None)
+                data_arr_qg["label"] = (data_arr_qg["arrondissement"]).astype(str)+ ": "+(data_arr_qg["progression"] * 100).round(2).astype(str) + "%"
+                geo_df_plot=data_arr_qg.merge(form, on="arrondissement",how="left")
+                
+                geo_data_to_plot= geo_df_plot[geo_df_plot["arrondissement"].isin(arr) ]
+                st.subheader(traduire_texte("Cartographie de la progression",lang))
+                create_choropleth_map(geo_data_to_plot, geometry_col='geometry', value_col='progression', 
+                         label_col='label', zoom_start=10, colormap='Greens',
+                         num_classes=5, title="Carte de la progression", 
+                         legend_name="Nombre de questionnaires", popup_cols="progression", 
+                         tooltip_format=None, width=800, height=600)
                 
             with col_map[1]:
-                geo_data_rep_to_plot= geo_data_rep[geo_data_rep["arrondissement"].isin(arr)]
-                st.subheader(traduire_texte("Disposition des ménages à enquéter",lang))
-                #create_categorical_map(geo_data_rep_to_plot, lat_col="Latitude", lon_col="Longitude", category_col="id_enqueteur", 
-                          #center_lat=None, center_lon=None, zoom_start=16,
-                          #popup_cols=None, tooltip_cols=None)
+                st.subheader(traduire_texte(" progression réelle par arrondissemnt",lang))
+                
+                
+                make_multi_progress_bar(data_arr_qg['arrondissement'],data_arr_qg['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=700)
             
-            col_ch=st.columns(2)
-            with col_ch[0]:
-                st.write("Indicateur")
-                create_boxplot(geo_data, "distance_m", categorical_col='arrondissement', 
-                   title="Ecarts entre les positions de ménages enquêté et les ménages attribués (en mètre)", y_axis_label=None, 
-                   colors=None, width=800, height=500,
-                   show_outliers=True)
             
-            with col_ch[1]:
-                pass
             
         with tabs[1]:
             col1=st.columns([1,1])
@@ -912,15 +941,13 @@ def main():
                 st.plotly_chart(box_fig)
                 
                 
-            tcol=st.columns(2)
-            with tcol[0]:
-                enq_for_heat_map=st.multiselect(traduire_texte("Sélectionner un (des) enquêteur (s)",lang),data["arrondissement"].unique(),default=data["arrondissement"].unique(), key="Enq_for_map")
-            with tcol[1]:
-                pass
+            
+            enq_for_heat_map=st.multiselect(traduire_texte("Sélectionner un (des) arrondissement (s)",lang),data["arrondissement"].unique(),default=data["arrondissement"].unique(), key="Enq_for_map")
+           
                 #enq_type=st.multiselect(traduire_texte("Sélectionner un type de questionnaire",lang),data_to_plot["Type"].unique(), default=data_to_plot["Type"].unique()[1])
             data_superviz_heat_map=data[(data["arrondissement"].isin(enq_for_heat_map))]
             cross_enq=pd.crosstab(data_superviz_heat_map["arrondissement"],data_superviz_heat_map["Date"])
-            make_st_heatmap_echat2(cross_enq,title=traduire_texte("Charge de travail accomplie par enquêteur",lang)) if data_superviz_heat_map.shape[0]>0 else None
+            make_st_heatmap_echat2(cross_enq,title=traduire_texte("Charge de travail accomplie par arrondissement",lang)) if data_superviz_heat_map.shape[0]>0 else None
             
         
 if __name__ == "__main__":

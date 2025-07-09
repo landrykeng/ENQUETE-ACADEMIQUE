@@ -16,6 +16,7 @@ from shapely.geometry import Point
 from streamlit_folium import st_folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import folium_static
+import branca.colormap as cm
 
 from math import radians, cos, sin, asin, sqrt
 
@@ -1226,3 +1227,139 @@ def create_boxplot(df, quantitative_col, categorical_col=None,
             })
     
     st_echarts(options=option, width=width, height=height)
+
+
+
+def create_choropleth_map(gdf, geometry_col='geometry', value_col='nombre_questionnaire', 
+                         label_col='arrondissement', zoom_start=10, colormap='YlOrRd', 
+                         num_classes=5, title="Carte choroplèthe", 
+                         legend_name="Nombre de questionnaires", popup_cols=None, 
+                         tooltip_format=None, width=800, height=600):
+    """
+    Crée une carte choroplèthe avec labels personnalisés
+    """
+
+    # Vérification des colonnes
+    required_cols = [geometry_col, value_col, label_col]
+    missing_cols = [col for col in required_cols if col not in gdf.columns]
+    if missing_cols:
+        st.error(f"Colonnes manquantes : {missing_cols}")
+        return None
+
+    # Nettoyage des données
+    gdf_clean = gdf.dropna(subset=required_cols)
+
+    if gdf_clean.empty:
+        st.error("Aucune donnée valide après nettoyage.")
+        return None
+
+    # Conversion en GeoDataFrame
+    try:
+        gdf_clean = gpd.GeoDataFrame(gdf_clean, geometry=geometry_col)
+    except Exception as e:
+        st.error(f"Erreur lors de la conversion en GeoDataFrame : {e}")
+        return None
+
+    # Vérification et définition du CRS
+    if gdf_clean.crs is None:
+        st.warning("CRS non défini. Utilisation de EPSG:4326 par défaut.")
+        gdf_clean.set_crs(epsg=4326, inplace=True)
+    else:
+        gdf_clean = gdf_clean.to_crs(epsg=4326)
+
+    # Création de la carte de base
+    m = folium.Map(zoom_start=zoom_start, tiles='OpenStreetMap')
+
+    # Palette de couleurs
+    color_palettes = {
+        'YlOrRd': ['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026'],
+        'Blues': ['#f7fbff', '#deebf7', '#c6dbef', '#9ecae1', '#6baed6', '#4292c6', '#2171b5', '#08519c', '#08306b'],
+        'Greens': ["#eb2315", "#e63e0b", "#dd9308", "#bfe005", "#4fd810", '#41ab5d', '#238b45', '#006d2c', '#00441b'],
+        'Reds': ['#fff5f0', '#fee0d2', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#a50f15', '#67000d'],
+        'Purples': ['#fcfbfd', '#efedf5', '#dadaeb', '#bcbddc', '#9e9ac8', '#807dba', '#6a51a3', '#54278f', '#3f007d'],
+        'Oranges': ['#fff5eb', '#fee6ce', '#fdd0a2', '#fdae6b', '#fd8d3c', '#f16913', '#d94801', '#a63603', '#7f2704']
+    }
+
+    colors = color_palettes.get(colormap, color_palettes['Greens'])
+
+    # Création de la colormap
+    min_val = gdf_clean[value_col].min()
+    max_val = gdf_clean[value_col].max()
+    colormap_obj = cm.LinearColormap(colors=colors[:num_classes], vmin=min_val, vmax=max_val, caption=legend_name)
+
+    # Fonction couleur
+    def get_color(value):
+        if pd.isna(value):
+            return '#808080'  # gris pour valeurs manquantes
+        return colormap_obj(value)
+
+    all_bounds = []
+
+    # Ajout des polygones
+    for idx, row in gdf_clean.iterrows():
+        geom = row[geometry_col]
+
+        # Préparation du popup
+        if popup_cols:
+            popup_text = "<br>".join([f"<b>{col}:</b> {row[col]}" for col in popup_cols if col in gdf_clean.columns])
+        else:
+            popup_text = f"<b>{label_col}:</b> {row[label_col]}<br><b>{legend_name}:</b> {row[value_col]}"
+        
+        # Tooltip
+        tooltip_text = tooltip_format.format(**row) if tooltip_format else f"{row[label_col]}"
+
+        # Bounds
+        if hasattr(geom, 'bounds'):
+            bounds = geom.bounds
+            all_bounds.append([[bounds[1], bounds[0]], [bounds[3], bounds[2]]])
+
+        # Ajout GeoJson
+        folium.GeoJson(
+            geom,
+            style_function=lambda x, color=get_color(row[value_col]): {
+                'fillColor': color,
+                'color': 'black',
+                'weight': 1,
+                'fillOpacity': 0.7,
+                'dashArray': '3, 3'
+            },
+            popup=folium.Popup(popup_text, max_width=300),
+            tooltip=folium.Tooltip(tooltip_text)
+        ).add_to(m)
+
+        # Ajout du label au centroïde
+        try:
+            centroid = geom.centroid
+            folium.Marker(
+                location=[centroid.y, centroid.x],
+                icon=folium.DivIcon(
+                    html=f'<div style="font-size: 19px; color: black; font-weight: bold; text-align: center; text-shadow: 1px 1px 1px white;">{row[label_col]}</div>',
+                    icon_size=(40, 20),
+                    icon_anchor=(20, 10)
+                )
+            ).add_to(m)
+        except Exception as e:
+            st.warning(f"Impossible d’ajouter le label pour {row[label_col]} : {e}")
+
+    # Ajustement de la vue
+    if all_bounds:
+        try:
+            min_lat = min([b[0][0] for b in all_bounds])
+            min_lon = min([b[0][1] for b in all_bounds])
+            max_lat = max([b[1][0] for b in all_bounds])
+            max_lon = max([b[1][1] for b in all_bounds])
+            m.fit_bounds([[min_lat, min_lon], [max_lat, max_lon]])
+        except Exception as e:
+            st.warning(f"Erreur lors de l'ajustement de la vue : {e}")
+
+    # Ajout de la légende et du titre
+    colormap_obj.add_to(m)
+    title_html = f'''
+    <h3 align="center" style="font-size:20px; margin-top:0px;"><b>{title}</b></h3>
+    '''
+    m.get_root().html.add_child(folium.Element(title_html))
+
+    folium_static(m, width=width, height=height)
+    return m
+
+    
