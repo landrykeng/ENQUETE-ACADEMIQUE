@@ -17,6 +17,23 @@ from streamlit_folium import st_folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import folium_static
 
+from math import radians, cos, sin, asin, sqrt
+
+# Fonction pour calculer la distance entre deux points GPS
+def haversine(lon1, lat1, lon2, lat2):
+    # Convertir les degrés en radians
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    
+    # Formule de Haversine
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a))
+    
+    # Rayon de la Terre en mètres
+    r = 6371000  
+    return c * r
+
 
 def graphique_barre_simple(df: pd.DataFrame, 
                           x_col: str, 
@@ -890,7 +907,7 @@ def create_categorical_map(gdf, lat_col, lon_col, category_col,
     )
     
     # Définir les couleurs pour chaque catégorie
-    categories = gdf_clean[category_col].unique()
+    categories = sorted(gdf_clean[category_col].unique())
     colors = ['red', 'blue', 'green', 'purple', 'orange', 'darkred', 'lightred',
               'beige', 'darkblue', 'darkgreen', 'cadetblue', 'darkpurple', 'white',
               'pink', 'lightblue', 'lightgreen', 'gray', 'black', 'lightgray']
@@ -939,3 +956,273 @@ def create_categorical_map(gdf, lat_col, lon_col, category_col,
     folium_static(m)
     
     return m
+
+
+def calculate_boxplot_stats(data):
+    """
+    Calcule les statistiques nécessaires pour un boxplot
+    
+    Returns:
+    --------
+    dict : Contient min, Q1, médiane, Q3, max, outliers
+    """
+    if len(data) == 0:
+        return None
+    
+    # Supprimer les valeurs manquantes
+    clean_data = data.dropna()
+    
+    if len(clean_data) == 0:
+        return None
+    
+    # Calculer les quartiles
+    Q1 = clean_data.quantile(0.25)
+    Q3 = clean_data.quantile(0.75)
+    median = clean_data.median()
+    
+    # Calculer les limites des moustaches (whiskers)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    
+    # Valeurs min et max dans les limites
+    whisker_min = clean_data[clean_data >= lower_bound].min()
+    whisker_max = clean_data[clean_data <= upper_bound].max()
+    
+    # Outliers
+    outliers = clean_data[(clean_data < lower_bound) | (clean_data > upper_bound)].tolist()
+    
+    return {
+        'min': whisker_min,
+        'Q1': Q1,
+        'median': median,
+        'Q3': Q3,
+        'max': whisker_max,
+        'outliers': outliers
+    }
+
+def create_boxplot(df, quantitative_col, categorical_col=None, 
+                   title="Boxplot", y_axis_label=None, 
+                   colors=None, width=800, height=500,
+                   show_outliers=True):
+    """
+    Crée un boxplot interactif avec streamlit_echarts
+    
+    Paramètres:
+    -----------
+    df : DataFrame
+        Les données à visualiser
+    quantitative_col : str
+        Nom de la colonne quantitative à représenter
+    categorical_col : str, optional
+        Nom de la colonne catégorielle pour grouper les données
+    title : str
+        Titre du graphique
+    y_axis_label : str, optional
+        Label de l'axe Y (par défaut: nom de la colonne quantitative)
+    colors : list, optional
+        Liste des couleurs pour chaque catégorie
+    width : int
+        Largeur du graphique
+    height : int
+        Hauteur du graphique
+    show_outliers : bool
+        Afficher ou non les outliers
+    
+    Returns:
+    --------
+    dict : Configuration ECharts pour le boxplot
+    """
+    
+    # Vérifications
+    if quantitative_col not in df.columns:
+        st.error(f"Colonne '{quantitative_col}' non trouvée dans le DataFrame")
+        return None
+    
+    if categorical_col and categorical_col not in df.columns:
+        st.error(f"Colonne '{categorical_col}' non trouvée dans le DataFrame")
+        return None
+    
+    # Supprimer les lignes avec des valeurs manquantes
+    cols_to_check = [quantitative_col]
+    if categorical_col:
+        cols_to_check.append(categorical_col)
+    
+    df_clean = df.dropna(subset=cols_to_check)
+    
+    if len(df_clean) == 0:
+        st.error("Aucune donnée valide après nettoyage")
+        return None
+    
+    # Couleurs par défaut
+    if colors is None:
+        colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', 
+                  '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc']
+    
+    # Label de l'axe Y
+    if y_axis_label is None:
+        y_axis_label = quantitative_col
+    
+    # Préparer les données
+    if categorical_col:
+        # Boxplot par catégorie
+        categories = sorted(df_clean[categorical_col].unique())
+        boxplot_data = []
+        scatter_data = []
+        
+        for i, category in enumerate(categories):
+            category_data = df_clean[df_clean[categorical_col] == category][quantitative_col]
+            stats = calculate_boxplot_stats(category_data)
+            
+            if stats:
+                # Données pour le boxplot [min, Q1, median, Q3, max]
+                boxplot_data.append([stats['min'], stats['Q1'], stats['median'], 
+                                   stats['Q3'], stats['max']])
+                
+                # Données pour les outliers
+                if show_outliers:
+                    for outlier in stats['outliers']:
+                        scatter_data.append([i, outlier])
+        
+        # Configuration ECharts
+        option = {
+            "title": {
+                "text": title,
+                "left": "center",
+                "textStyle": {"fontSize": 16, "fontWeight": "bold"}
+            },
+            "tooltip": {
+                "trigger": "item",
+                "axisPointer": {"type": "shadow"}
+            },
+            "grid": {
+                "left": "10%",
+                "right": "10%",
+                "bottom": "15%",
+                "top": "15%"
+            },
+            "xAxis": {
+                "type": "category",
+                "data": categories,
+                "boundaryGap": True,
+                "nameGap": 30,
+                "splitArea": {"show": False},
+                "splitLine": {"show": False}
+            },
+            "yAxis": {
+                "type": "value",
+                "name": y_axis_label,
+                "splitArea": {"show": True}
+            },
+            "series": [
+                {
+                    "name": "Boxplot",
+                    "type": "boxplot",
+                    "data": boxplot_data,
+                    "itemStyle": {
+                        "color": colors[0],
+                        "borderColor": "#000"
+                    },
+                    "tooltip": {
+                        "formatter": """"""
+                                }
+                }
+            ]
+        }
+            
+        
+        
+        # Ajouter les outliers si demandé
+        if show_outliers and scatter_data:
+            option["series"].append({
+                "name": "Outliers",
+                "type": "scatter",
+                "data": scatter_data,
+                "itemStyle": {
+                    "color": colors[1] if len(colors) > 1 else "#ee6666",
+                    "opacity": 0.6
+                },
+                "symbolSize": 6
+            })
+    
+    else:
+        # Boxplot simple (une seule série)
+        stats = calculate_boxplot_stats(df_clean[quantitative_col])
+        
+        if not stats:
+            st.error("Impossible de calculer les statistiques")
+            return None
+        
+        boxplot_data = [[stats['min'], stats['Q1'], stats['median'], 
+                        stats['Q3'], stats['max']]]
+        
+        scatter_data = [[0, outlier] for outlier in stats['outliers']] if show_outliers else []
+        
+        option = {
+            "title": {
+                "text": title,
+                "left": "center",
+                "textStyle": {"fontSize": 16, "fontWeight": "bold"}
+            },
+            "tooltip": {
+                "trigger": "item",
+                "axisPointer": {"type": "shadow"}
+            },
+            "grid": {
+                "left": "10%",
+                "right": "10%",
+                "bottom": "15%",
+                "top": "15%"
+            },
+            "xAxis": {
+                "type": "category",
+                "data": [quantitative_col],
+                "boundaryGap": True,
+                "nameGap": 30,
+                "splitArea": {"show": False},
+                "splitLine": {"show": False}
+            },
+            "yAxis": {
+                "type": "value",
+                "name": y_axis_label,
+                "splitArea": {"show": True}
+            },
+            "series": [
+                {
+                    "name": "Boxplot",
+                    "type": "boxplot",
+                    "data": boxplot_data,
+                    "itemStyle": {
+                        "color": colors[0],
+                        "borderColor": "#000"
+                    },
+                    "tooltip": {
+                        "formatter": """function(param) {
+                            return [
+                                'Variable: ' + param.name,
+                                'Maximum: ' + param.data[5],
+                                'Q3: ' + param.data[4],
+                                'Médiane: ' + param.data[3],
+                                'Q1: ' + param.data[2],
+                                'Minimum: ' + param.data[1]
+                            ].join('<br/>');
+                        }"""
+                    }
+                }
+            ]
+        }
+        
+        # Ajouter les outliers si demandé
+        if show_outliers and scatter_data:
+            option["series"].append({
+                "name": "Outliers",
+                "type": "scatter",
+                "data": scatter_data,
+                "itemStyle": {
+                    "color": colors[1] if len(colors) > 1 else "#ee6666",
+                    "opacity": 0.6
+                },
+                "symbolSize": 6
+            })
+    
+    st_echarts(options=option, width=width, height=height)
