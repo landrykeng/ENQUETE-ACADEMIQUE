@@ -703,8 +703,8 @@ def main():
         geo_user_data_rep=form.merge(user_data_rep, on="arrondissement", how="left")
         geo_user_data_rep= gpd.GeoDataFrame(geo_user_data_rep, geometry='geometry')
 
-        user_data
-        geo_data
+        #user_data
+        #geo_data
         
         
         logo=Image.open("Logo_ISSEA.png")
@@ -758,7 +758,7 @@ def main():
         data_enq["count_collecte"] = data_enq["count_collecte"].fillna(0)
         data_enq["progression"] = data_enq["count_collecte"] / (data_enq["count_distribution"] )
         # Remplacer les valeurs manquantes de la colonne count_collecte par 0
-        data_enq
+        #data_enq
         #==========================================================================
         
         with cl_tb[0]:
@@ -789,7 +789,7 @@ def main():
         
         with tabs[0]:
             with st.expander("Description des indicateurs"):
-                st.subheader("1. Taux de localisation des ménages: Donne la proportions des ménages dont les coordonnées g'géographique ont été collectées")
+                st.subheader("1. Taux de localisation des ménages: Donne la proportion des ménages dont les coordonnées g'géographique ont été collectées")
             ca=st.columns([1,2])
             type_questionnaire=user_data["Questionnaire"].values[0]
             metric_text=" 💰Tontine" if type_questionnaire=="Tontine" else " 🗑️ Dechets menagers"
@@ -861,7 +861,7 @@ def main():
             with col_ch[0]:
                 st.write("Indicateur")
                 create_boxplot(geo_data, "distance_m", categorical_col='id_enqueteur', 
-                   title="distribution des ecart entre les positions de ménages enquêté et les ménages attribués", y_axis_label=None, 
+                   title="distribution des ecarts entre les positions de ménages enquêté et les ménages attribués (en mètre)", y_axis_label=None, 
                    colors=None, width=800, height=500,
                    show_outliers=True)
             
