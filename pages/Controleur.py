@@ -672,6 +672,10 @@ def main():
         
        
         data=pd.read_excel("data_collected.xlsx")
+        fichier=Path("data_collected.xlsx")
+        date_up_date = datetime.fromtimestamp(fichier.stat().st_mtime)
+        
+        st.write(date_up_date.strftime("%Y-%m-%d %H:%M:%S"))
         data["Date"]=data["Date"].dt.date
         data['arrondissement'] = data['arrondissement'].str.replace('Yaounde', 'Yaoundé', regex=False)
         user_data=data[data["id_controleur"]==user]
@@ -732,7 +736,7 @@ def main():
                 ">
                     <span style="font-size: 5.2em;">
                         <span style="color: #FFE5E5;">🔄 Dernière mise à jour : </span>
-                        <span style="color: #FFFFFF;">{last_update.strftime("%d/%m/%Y %H:%M:%S") if last_update else "Aucune mise à jour"}</span>
+                        <span style="color: #FFFFFF;">{date_up_date.strftime("%Y-%m-%d %H:%M:%S")}</span>
                     </span>
                 </div>
                 
