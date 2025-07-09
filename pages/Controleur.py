@@ -788,6 +788,8 @@ def main():
             ])
         
         with tabs[0]:
+            with st.expander("Description des indicateurs"):
+                st.subheader("1. Taux de localisation des ménages: Donne la proportions des ménages dont les coordonnées g'géographique ont été collectées")
             ca=st.columns([1,2])
             type_questionnaire=user_data["Questionnaire"].values[0]
             metric_text=" 💰Tontine" if type_questionnaire=="Tontine" else " 🗑️ Dechets menagers"
