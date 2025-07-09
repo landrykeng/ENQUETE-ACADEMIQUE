@@ -4493,7 +4493,7 @@ def make_st_heatmap_echat2(df, title="", height="700px"):
             "axisLabel": {
                 "rotate": 90,
                 "interval": 0,
-                "fontSize": 8,
+                "fontSize": 20,
                 "width": 50,
                 "overflow": "truncate"
             }
