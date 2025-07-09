@@ -861,7 +861,7 @@ def main():
             with col_ch[0]:
                 st.write("Indicateur")
                 create_boxplot(geo_data, "distance_m", categorical_col='id_enqueteur', 
-                   title="distribution des ecarts entre les positions de ménages enquêté et les ménages attribués (en mètre)", y_axis_label=None, 
+                   title="Ecarts entre les positions de ménages enquêté et les ménages attribués (en mètre)", y_axis_label=None, 
                    colors=None, width=800, height=500,
                    show_outliers=True)
             
