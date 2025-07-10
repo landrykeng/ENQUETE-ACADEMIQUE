@@ -772,7 +772,7 @@ def main():
 
         tabs = st.tabs([
             f"📈 {traduire_texte('ANALYSE GENERALE', lang)}", 
-            f"📊 {traduire_texte('PERFORMANCE ET QUALITE DES DONNEES', lang)}"
+            f"💫 {traduire_texte('A propos', lang)}"
             ])
         
         with tabs[0]:
@@ -851,9 +851,19 @@ def main():
                     
             with col[1]:
                 
-                make_multi_progress_bar(data_arr['arrondissement'],data_arr['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=700)
-                
-                
+                make_multi_progress_bar(data_arr['arrondissement'],data_arr['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=600)
+                create_pie_chart_from_df(data, "Resultat_collecte", style="donut", title="Statut global", colors=None,cle="sdhkdil")
+            
+            cb=st.columns(2)
+            with cb[0]:
+                create_pie_chart_from_df(data, "Appreciation_qualite_interview", style="donut", title="Appréciation Generale", colors=None,) 
+            
+            with cb[1]:
+                data_qest=data.groupby("id_enqueteur").agg({"Nb_questions_sans_reponse":"size"})
+                mean_qst_sans_rep=round(data_qest["Nb_questions_sans_reponse"].mean())
+                std_qst_sans_rep=round(data_qest["Nb_questions_sans_reponse"].mean())
+                create_missing_questions_gauge(mean_qst_sans_rep, std_qst_sans_rep, total_questions=None, 
+                                 objectif_max=None, titre="Total Questions Sans Réponse", cle="jhdskj")
             st.title("SECTION 2: STATISTIQUES SUR LES QUESTIONNAIRES VALIDES PAR LE QG ET LES CONTROLEURS")
             
             data_qg=data[data["Statut"].isin(["Approuvé par le QG","Approuvé par les controleurs"])]
@@ -926,46 +936,93 @@ def main():
             data_evolution["Date"] = data_evolution["Date"].astype(str)
             create_crossed_bar_chart(data_evolution, "Date", "Statut", title="evolution",width="100%", height="500px",orientation="vertical",)
             
-        with tabs[1]:
-            col1=st.columns([1,1])
-            with col1[0]:
-                sbcl=st.columns([1,1])
-                with sbcl[0]:
-                    select_arr=st.selectbox(traduire_texte("Sélectionner le Superviseur",lang),data["arrondissement"].unique())
-                    data_select_arr=data[data["arrondissement"]==select_arr]   
-                    count_select_arr= data_arr.loc[data_arr['arrondissement']==select_arr,"count_collecte"].values[0]
-                    progress_select_arr=data_arr.loc[data_arr['arrondissement']==select_arr,"progression"].values[0]
-                   
-                    display_single_metric_advanced(" Total", round(count_select_arr), delta=round(100*progress_select_arr , 2), color_scheme="teal")
-                st.write("")
-                
-                
-                
-                #st.subheader(traduire_texte(f"Temps moyen de remplissage: {round(avrg_time)} min",lang)) 
-                with sbcl[1]:
-                   time_ecart=round(data_select_arr["Duree_interview"].std())
-                   avrg_time=round(data_select_arr["Duree_interview"].mean())
-                   create_questionnaire_time_gauge(avrg_time, time_ecart, temps_cible=None, titre="Durée des interviews",cle="Gkjbkn")
-            st.write("")
-            
-                
-                
-            st.write("")
-            with col1[1]:
-                box_fig = px.box(data, x="arrondissement", y="Duree_interview", color="arrondissement",
-                                    title=traduire_texte("Distribution du temps de remplissage en minute par arrindissement", lang),
-                                    height=400)
-                st.plotly_chart(box_fig)
-                
-                
-            
             enq_for_heat_map=st.multiselect(traduire_texte("Sélectionner un (des) arrondissement (s)",lang),data["arrondissement"].unique(),default=data["arrondissement"].unique(), key="Enq_for_map")
            
                 #enq_type=st.multiselect(traduire_texte("Sélectionner un type de questionnaire",lang),data_to_plot["Type"].unique(), default=data_to_plot["Type"].unique()[1])
             data_superviz_heat_map=data[(data["arrondissement"].isin(enq_for_heat_map))]
             cross_enq=pd.crosstab(data_superviz_heat_map["arrondissement"],data_superviz_heat_map["Date"])
             make_st_heatmap_echat2(cross_enq,title=traduire_texte("Charge de travail accomplie par arrondissement",lang)) if data_superviz_heat_map.shape[0]>0 else None
-            
         
+            st.title("SECTION 3: QUALITE ET APPRECIATION GENERALE DE LA COLLECTE")
+            col1=st.columns([1,1])
+            
+            with col1[0]:
+                sbcl=st.columns([1,1])
+                with sbcl[0]:
+                    
+                    
+                    
+                        select_arr=st.selectbox(traduire_texte("Sélectionner un arrondissement",lang),data["arrondissement"].unique())
+                        select_teme=st.multiselect("Choisir le (les) thème (s)", options=data["Questionnaire"].unique(), default=data["Questionnaire"].unique())
+                        #progression par enqueteur
+                        df_ar2=data[data["Questionnaire"].isin(select_teme)]
+                        df_ar2_rep=data_rep[data_rep["questionnaire"].isin(select_teme)]
+                        a_test2=pd.DataFrame(df_ar2["arrondissement"].value_counts())
+                        b_test2=pd.DataFrame(df_ar2_rep["arrondissement"].value_counts())
+                                
+                                # Agrégation des deux tables a_test et b_test sur "id_enqueteur"
+                        data_arr2 = a_test2.join(b_test2, how="outer", lsuffix="_collecte", rsuffix="_distribution")
+                        data_arr2.reset_index(inplace=True)
+                        data_arr2.rename(columns={"index": "id_enqueteur"}, inplace=True)
+                                # Ajout de la colonne progression
+                        data_arr2["count_collecte"] = data_arr2["count_collecte"].fillna(0)
+                        data_arr2["progression"] = data_arr2["count_collecte"] / (data_arr2["count_distribution"] )
+                        
+                        data_select_arr=data[(data["arrondissement"]==select_arr)] if len(select_teme)==0 else data[(data["arrondissement"]==select_arr)&(data["Questionnaire"].isin(select_teme))] 
+                        count_select_arr= data_arr2.loc[data_arr2['arrondissement']==select_arr,"count_collecte"].values[0]
+                        progress_select_arr=data_arr2.loc[data_arr2['arrondissement']==select_arr,"progression"].values[0]
+                    
+                        display_single_metric_advanced(" Total", round(count_select_arr), delta=round(100*progress_select_arr , 2), color_scheme="teal")
+                st.write("")
+                    
+                with sbcl[1]:
+                        time_std_enq=round(data_select_arr["Duree_interview"].std())
+                        time_mean_enq=round(data_select_arr["Duree_interview"].mean())
+                        create_questionnaire_time_gauge(time_mean_enq, time_std_enq, temps_cible=None, titre="Durée des interviews",cle="jhckjdsk")
+                    #make_progress_char(progress_select_enq,couleur="",titre=traduire_texte("Progression de la collecte",lang))
+                st.write("")
+                
+                    
+                with col1[1]:
+                        box_fig = px.box(data, x="arrondissement", y="Duree_interview", color="arrondissement",
+                                            title=traduire_texte("Distribution du temps de remplissage en minute par arrondissement", lang),
+                                            height=400)
+                        st.plotly_chart(box_fig)
+            c3=st.columns(2)
+            data_for=data[data["Questionnaire"].isin(select_teme)]
+            with c3[0]:
+                    make_cross_echart(data_for, "arrondissement", "Resultat_collecte", title="Resultat collecte", x_label_rotation=0, colors=None, 
+                            height="400px", cle="cross_chart", normalize=False, 
+                            show_percentages=True, chart_type="bar", stack_mode="total")
+            with c3[1]:
+                    make_cross_echart(data_for, "arrondissement", "Appreciation_qualite_interview", title="Appréciation de la collecte", x_label_rotation=0, 
+                            height="400px", cle="kjdsnk", colors = ["#CC6606", "#BECA10", "#36BD14","#D3B26B", "#3A3025", "#2514BD","#47093D", "#10C4CA", "#D9FF00"], 
+                            show_percentages=True, chart_type="bar", stack_mode="percentage",)
+                        
+        with tabs[1]:
+            pc=st.columns(3)
+            with pc[0]:
+                sample_data = {
+                'name': 'Landry KENGNE',
+                'title': 'Statistician',
+                'about': '.',
+                'email': 'landry.kengne99@gmail.com',
+                'phone': '+237 6 98 28 05 37',
+                'skills': ['Statistiques', 'Economics', 'Dashbord conceptor', 'Data analist']
+            }
+                create_simple_background_profile(
+                name=sample_data['name'],
+                title=sample_data['title'],
+                about_text=sample_data['about'],
+                image_path="conceptor.jpg",
+                email=sample_data['email'],
+                phone=sample_data['phone'],
+                skills=sample_data['skills'],
+                theme_color="#CC6606",
+                height=700
+            ) 
+            
+                
+            
 if __name__ == "__main__":
     main()     

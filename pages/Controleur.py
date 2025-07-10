@@ -792,7 +792,7 @@ def main():
             ])
         
         with tabs[0]:
-            user_data
+            
             st.title("SECTION1: INFORMATIONS GENERALE SUR LA COLLECTE")
             with st.expander("Description des indicateurs"):
                 st.subheader("1. Taux de localisation des ménages: Donne la proportion des ménages dont les coordonnées g'géographique ont été collectées")

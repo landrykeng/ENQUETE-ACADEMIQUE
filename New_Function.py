@@ -1673,7 +1673,7 @@ def make_cross_echart(df, var1, var2, title="", x_label_rotation=45, colors=None
         },
         "legend": {
             "data": [str(col) for col in cross_table.columns],
-            "top": "10%",
+            "top": "bottom",
             "left": "center"
         },
         "grid": {
