@@ -1647,9 +1647,7 @@ def make_cross_echart(df, var1, var2, title="", x_label_rotation=45, colors=None
         
         series_data.append(series_config)
     
-    # Titre automatique si non fourni
-    if not title:
-        title = f"Croisement entre {var1} et {var2}"
+   
     
     # Configuration du graphique
     options = {
@@ -1657,7 +1655,7 @@ def make_cross_echart(df, var1, var2, title="", x_label_rotation=45, colors=None
             "text": title,
             "left": "center",
             "textStyle": {
-                "fontSize": 16,
+                "fontSize": 17,
                 "fontWeight": "bold"
             }
         },
@@ -1687,7 +1685,7 @@ def make_cross_echart(df, var1, var2, title="", x_label_rotation=45, colors=None
                 "rotate": x_label_rotation,
                 "interval": 0
             },
-            "name": var1,
+            #"name": var1,
             "nameLocation": "middle",
             "nameGap": 30
         },
@@ -1713,3 +1711,219 @@ def make_cross_echart(df, var1, var2, title="", x_label_rotation=45, colors=None
     
     # Afficher le graphique
     st_echarts(options=options, height=height, key=cle)
+    
+
+def create_missing_questions_gauge(questions_manquantes_moy, ecart_type, total_questions=None, 
+                                 objectif_max=None, titre="Questions Sans Réponse par Questionnaire", cle="jhdskj"):
+    """
+    Crée un graphique de jauge pour visualiser le nombre moyen de questions sans réponse
+    par questionnaire avec indication de l'écart-type.
+    
+    Parameters:
+    -----------
+    questions_manquantes_moy : float
+        Nombre moyen de questions sans réponse par questionnaire
+    ecart_type : float
+        Écart-type du nombre de questions sans réponse
+    total_questions : int, optional
+        Nombre total de questions dans le questionnaire (pour calculer le %)
+    objectif_max : float, optional
+        Nombre maximum acceptable de questions sans réponse
+    titre : str
+        Titre du graphique
+    
+    Returns:
+    --------
+    Affiche directement le graphique dans Streamlit
+    """
+    
+    # Calcul des limites de la jauge
+    valeur_max = max(
+        questions_manquantes_moy + 2 * ecart_type,
+        objectif_max * 1.5 if objectif_max else questions_manquantes_moy * 2,
+        5  # Minimum de 5 pour avoir une échelle visible
+    )
+    
+    # Calcul du pourcentage si total_questions fourni
+    if total_questions:
+        pourcentage_moy = (questions_manquantes_moy / total_questions) * 100
+        pourcentage_ecart = (ecart_type / total_questions) * 100
+        show_percentage = True
+    else:
+        pourcentage_moy = 0
+        pourcentage_ecart = 0
+        show_percentage = False
+    
+    # Définition des seuils (inversés : bas = bon, haut = mauvais)
+    seuil_excellent = valeur_max * 0.15  # Très peu de questions manquantes
+    seuil_bon = valeur_max * 0.35        # Acceptable
+    seuil_moyen = valeur_max * 0.65      # Préoccupant
+    # Au-dessus = problématique
+    col= "#d62728" if questions_manquantes_moy >15  else "#27d684"
+    # Configuration de la jauge ECharts
+    option = {
+        "title": {
+            "text": titre,
+            "left": "center",
+            "top": "5%",
+            "textStyle": {
+                "fontSize": 18,
+                "fontWeight": "bold",
+                "color": "#333"
+            }
+        },
+        "series": [
+            {
+                "name": "Questions manquantes",
+                "type": "gauge",
+                "center": ["50%", "55%"],
+                "radius": "80%",
+                "min": 0,
+                "max": valeur_max,
+                "splitNumber": 5,
+                "startAngle": 225,
+                "endAngle": -45,
+                "itemStyle": {
+                    "color": "#9027d6"  # Rouge pour indiquer un problème
+                },
+                "progress": {
+                    "show": True,
+                    "width": 18
+                },
+                "pointer": {
+                    "show": True,
+                    "length": "75%",
+                    "width": 8,
+                    "itemStyle": {
+                        "color": "#7819e4"
+                    }
+                },
+                "axisLine": {
+                    "lineStyle": {
+                        "width": 25,
+                        "color": [
+                            [seuil_excellent/valeur_max, "#2ca02c"],   # Vert - Excellent
+                            [seuil_bon/valeur_max, "#90EE90"],        # Vert clair - Bon  
+                            [seuil_moyen/valeur_max, "#FFD700"],      # Jaune - Moyen
+                            [0.85, "#FFA500"],                        # Orange - Préoccupant
+                            [1, "#d62728"]                            # Rouge - Problématique
+                        ]
+                    }
+                },
+                "axisTick": {
+                    "distance": -35,
+                    "length": 8,
+                    "lineStyle": {
+                        "color": "#fff",
+                        "width": 2
+                    }
+                },
+                "splitLine": {
+                    "distance": -35,
+                    "length": 25,
+                    "lineStyle": {
+                        "color": "#fff",
+                        "width": 4
+                    }
+                },
+                "axisLabel": {
+                    "color": "#333",
+                    "distance": 45,
+                    "fontSize": 12,
+                    "formatter": "{value}"
+                },
+                "detail": {
+                    "valueAnimation": True,
+                    "formatter": "{value}",
+                    "color": col ,
+                    "fontSize": 24,
+                    "fontWeight": "bold",
+                    "offsetCenter": [0, "45%"]
+                },
+                "data": [
+                    {
+                        "value": questions_manquantes_moy,
+                        "name": "Question sans reponse"
+                    }
+                ]
+            }
+        ],
+        "graphic": []
+    }
+    
+    # Ajout des annotations
+    graphic_elements = [
+        # Écart-type
+        {
+            "type": "text",
+            "left": "center",
+            "top": "83%",
+            "style": {
+                "text": f"Écart-type: ±{ecart_type:.1f}",
+                "fontSize": 14,
+                "fontWeight": "bold",
+                "fill": "#666"
+            }
+        },
+        # Plage normale
+        {
+            "type": "text", 
+            "left": "center",
+            "top": "88%",
+            "style": {
+                "text": f"Plage : {max(0, questions_manquantes_moy-ecart_type):.1f} - {questions_manquantes_moy+ecart_type:.1f}",
+                "fontSize": 12,
+                "fill": "#888"
+            }
+        }
+    ]
+    
+    # Ajouter le pourcentage si disponible
+    if show_percentage:
+        graphic_elements.insert(1, {
+            "type": "text",
+            "left": "center", 
+            "top": "93%",
+            "style": {
+                "text": f"Pourcentage moyen: {pourcentage_moy:.1f}% (±{pourcentage_ecart:.1f}%)",
+                "fontSize": 12,
+                "fontWeight": "bold",
+                "fill": "#333"
+            }
+        })
+    
+    # Ajouter l'objectif si fourni
+    if objectif_max:
+        graphic_elements.append({
+            "type": "text",
+            "left": "center",
+            "top": "98%" if show_percentage else "93%",
+            "style": {
+                "text": f"Objectif: ≤ {objectif_max}",
+                "fontSize": 12,
+                "fontWeight": "bold", 
+                "fill": "#2ca02c" if questions_manquantes_moy <= objectif_max else "#d62728"
+            }
+        })
+        
+        # Ajouter une ligne de seuil pour l'objectif
+        option["series"][0]["markLine"] = {
+            "silent": True,
+            "data": [{
+                "yAxis": objectif_max,
+                "lineStyle": {
+                    "color": "#2ca02c",
+                    "width": 3,
+                    "type": "dashed"
+                },
+                "label": {
+                    "formatter": "Objectif",
+                    "position": "insideEndTop"
+                }
+            }]
+        }
+    
+    option["graphic"] = graphic_elements
+    
+    # Afficher la jauge
+    st_echarts(options=option, height="450px", key=cle)
