@@ -902,7 +902,7 @@ def main():
                    
                     display_single_metric_advanced(" Total", round(count_select_enq), delta=round(100*progress_select_enq , 2), color_scheme="teal")
                 st.write("")
-                avrg_time=data_select_enq["Duree_interview"].mean()
+                
                 with sbcl[1]:
                     time_std_enq=round(data_select_enq["Duree_interview"].std())
                     time_mean_enq=round(data_select_enq["Duree_interview"].mean())
@@ -916,6 +916,16 @@ def main():
                                         title=traduire_texte("Distribution du temps de remplissage en minute par enquêteur", lang),
                                         height=400)
                     st.plotly_chart(box_fig)
+            c3=st.columns(2)
+            with c3[0]:
+                make_cross_echart(user_data, "id_enqueteur", "Resultat_collecte", title="Resultat collecte", x_label_rotation=0, colors=None, 
+                     height="400px", cle="cross_chart", normalize=False, 
+                     show_percentages=True, chart_type="bar", stack_mode="total")
+            with c3[1]:
+                make_cross_echart(user_data, "id_enqueteur", "Appreciation_qualite_interview", title="Appréciation de la collecte", x_label_rotation=0, 
+                     height="400px", cle="kjdsnk", colors = ["#CC6606", "#BECA10", "#36BD14"], 
+                     show_percentages=True, chart_type="bar", stack_mode="percentage")
+                    
         with tabs[1]:
             pass
                 

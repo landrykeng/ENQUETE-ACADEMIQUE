@@ -1542,4 +1542,174 @@ def create_questionnaire_time_gauge(temps_remplissage, ecart_type, temps_cible=N
     # Afficher la jauge
     st_echarts(options=option, height="400px", key=cle)
 
+
+
+def make_cross_echart(df, var1, var2, title="", x_label_rotation=45, colors=None, 
+                     height="400px", cle="cross_chart", normalize=False, 
+                     show_percentages=True, chart_type="bar", stack_mode="total"):
+    """
+    Generate a grouped/stacked bar chart using st_echarts from two variables in a dataframe.
+
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        The input dataframe containing the data
+    var1 : str
+        Name of the first variable (will be used for x-axis categories)
+    var2 : str
+        Name of the second variable (will be used for series/colors)
+    title : str, optional
+        Title of the chart (default: "")
+    x_label_rotation : int, optional
+        Rotation angle for x-axis labels (default: 45)
+    colors : list, optional
+        List of colors for the series (default: predefined colors)
+    height : str, optional
+        Height of the chart (default: "400px")
+    cle : str, optional
+        Unique key for the chart (default: "cross_chart")
+    normalize : bool, optional
+        If True, show percentages instead of counts (default: False)
+    show_percentages : bool, optional
+        If True, show percentage labels on bars (default: True)
+    chart_type : str, optional
+        Type of chart: "bar" or "line" (default: "bar")
+    stack_mode : str, optional
+        Stacking mode: "total" for stacked, None for grouped (default: "total")
+
+    Returns:
+    --------
+    pd.DataFrame
+        The cross table used for the chart
+    """
     
+    # Vérifications des paramètres
+    if var1 not in df.columns:
+        st.error(f"La variable '{var1}' n'existe pas dans le dataframe")
+        return None
+        
+    if var2 not in df.columns:
+        st.error(f"La variable '{var2}' n'existe pas dans le dataframe")
+        return None
+    
+    # Supprimer les valeurs manquantes
+    df_clean = df[[var1, var2]].dropna()
+    
+    if df_clean.empty:
+        st.warning("Aucune donnée valide trouvée après suppression des valeurs manquantes")
+        return None
+    
+    # Créer la table de contingence
+    if normalize:
+        # Calcul des pourcentages en ligne (par rapport à var1)
+        cross_table = pd.crosstab(df_clean[var1], df_clean[var2], normalize='index') * 100
+        cross_table = cross_table.round(1)
+    else:
+        # Calcul des effectifs
+        cross_table = pd.crosstab(df_clean[var1], df_clean[var2])
+    
+    # Couleurs par défaut
+    if colors is None:
+        colors = ["#10C92F", "#DBE917", "#E74219", "#490B07", "#0CA0B4", "#064C56", 
+                 "#8B4513", "#FF69B4", "#32CD32", "#FF4500", "#9370DB", "#20B2AA"]
+    
+    # Préparer les données pour le graphique
+    categories = cross_table.index.tolist()
+    
+    # Configuration des séries
+    series_data = []
+    for i, col in enumerate(cross_table.columns):
+        series_config = {
+            "name": str(col),
+            "data": cross_table[col].tolist(),
+            "type": chart_type,
+            "itemStyle": {"color": colors[i % len(colors)]},
+        }
+        
+        # Ajouter le mode stack si spécifié
+        if stack_mode and chart_type == "bar":
+            series_config["stack"] = stack_mode
+            
+        # Configuration des labels
+        if show_percentages:
+            if normalize:
+                series_config["label"] = {
+                    "show": True,
+                    "formatter": "{c}%",
+                    "position": "inside" if stack_mode else "top"
+                }
+            else:
+                series_config["label"] = {
+                    "show": True,
+                    "formatter": "{c}",
+                    "position": "inside" if stack_mode else "top"
+                }
+        
+        series_data.append(series_config)
+    
+    # Titre automatique si non fourni
+    if not title:
+        title = f"Croisement entre {var1} et {var2}"
+    
+    # Configuration du graphique
+    options = {
+        "title": {
+            "text": title,
+            "left": "center",
+            "textStyle": {
+                "fontSize": 16,
+                "fontWeight": "bold"
+            }
+        },
+        "tooltip": {
+            "trigger": "axis",
+            "axisPointer": {
+                "type": "shadow"
+            },
+            "formatter": "{b}<br/>{a}: {c}" + ("%" if normalize else "")
+        },
+        "legend": {
+            "data": [str(col) for col in cross_table.columns],
+            "top": "10%",
+            "left": "center"
+        },
+        "grid": {
+            "left": "3%",
+            "right": "4%",
+            "bottom": "15%",
+            "top": "20%",
+            "containLabel": True
+        },
+        "xAxis": {
+            "type": "category",
+            "data": categories,
+            "axisLabel": {
+                "rotate": x_label_rotation,
+                "interval": 0
+            },
+            "name": var1,
+            "nameLocation": "middle",
+            "nameGap": 30
+        },
+        "yAxis": {
+            "type": "value",
+            "name": "Pourcentage (%)" if normalize else "Effectifs",
+            "nameLocation": "middle",
+            "nameGap": 50,
+            "axisLabel": {
+                "formatter": "{value}" + ("%" if normalize else "")
+            }
+        },
+        "series": series_data
+    }
+    
+    # Ajuster les options selon le type de graphique
+    if chart_type == "line":
+        options["tooltip"]["trigger"] = "item"
+        for series in options["series"]:
+            series["smooth"] = True
+            series["symbol"] = "circle"
+            series["symbolSize"] = 6
+    
+    # Afficher le graphique
+    st_echarts(options=options, height=height, key=cle)
