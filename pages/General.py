@@ -938,10 +938,14 @@ def main():
                    
                     display_single_metric_advanced(" Total", round(count_select_arr), delta=round(100*progress_select_arr , 2), color_scheme="teal")
                 st.write("")
-                avrg_time=data_select_arr["Duree_interview"].mean()
-                st.subheader(traduire_texte(f"Temps moyen de remplissage: {round(avrg_time)} min",lang)) 
+                
+                
+                
+                #st.subheader(traduire_texte(f"Temps moyen de remplissage: {round(avrg_time)} min",lang)) 
                 with sbcl[1]:
-                   make_progress_char(progress_select_arr,couleur="",titre=traduire_texte("Progression de la collecte",lang))
+                   time_ecart=round(data_select_arr["Duree_interview"].std())
+                   avrg_time=round(data_select_arr["Duree_interview"].mean())
+                   create_questionnaire_time_gauge(avrg_time, time_ecart, temps_cible=None, titre="Durée des interviews",cle="Gkjbkn")
             st.write("")
             
                 

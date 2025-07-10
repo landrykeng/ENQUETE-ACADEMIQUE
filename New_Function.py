@@ -1363,7 +1363,7 @@ def create_choropleth_map(gdf, geometry_col='geometry', value_col='nombre_questi
     return m
 
 
-def create_questionnaire_time_gauge(temps_remplissage, ecart_type, temps_cible=None, titre="Temps de Remplissage du Questionnaire"):
+def create_questionnaire_time_gauge(temps_remplissage, ecart_type, temps_cible=None, titre="Temps de Remplissage du Questionnaire",cle="gauge_questionnaire"):
     """
     Crée un graphique de jauge pour visualiser le temps de remplissage d'un questionnaire
     avec indication de l'écart-type en utilisant streamlit-echarts.
@@ -1540,6 +1540,6 @@ def create_questionnaire_time_gauge(temps_remplissage, ecart_type, temps_cible=N
         }
     
     # Afficher la jauge
-    st_echarts(options=option, height="400px", key="gauge_questionnaire")
+    st_echarts(options=option, height="400px", key=cle)
 
     

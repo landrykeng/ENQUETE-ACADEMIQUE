@@ -675,7 +675,7 @@ def main():
         fichier=Path("data_collected.xlsx")
         date_up_date = datetime.fromtimestamp(fichier.stat().st_mtime)
         
-        st.write(date_up_date.strftime("%Y-%m-%d %H:%M:%S"))
+
         data["Date"]=data["Date"].dt.date
         data['arrondissement'] = data['arrondissement'].str.replace('Yaounde', 'Yaoundé', regex=False)
         user_data=data[data["id_controleur"]==user]
@@ -792,6 +792,8 @@ def main():
             ])
         
         with tabs[0]:
+            user_data
+            st.title("SECTION1: INFORMATIONS GENERALE SUR LA COLLECTE")
             with st.expander("Description des indicateurs"):
                 st.subheader("1. Taux de localisation des ménages: Donne la proportion des ménages dont les coordonnées g'géographique ont été collectées")
             ca=st.columns([1,2])
@@ -813,8 +815,11 @@ def main():
                 with sublcb1[0]:
                     make_progress_char(progress_all,couleur="",titre=traduire_texte("Progression de la collecte",lang))
                 with sublcb1[1]:
-                    nb_missing_longitude = user_data["Longitude_collected"].isna().sum()
-                    make_progress_char((user_data.shape[0]-nb_missing_longitude)/user_data.shape[0],couleur="",titre=traduire_texte("Taux de localisation des ménages",lang))
+                    time_std=round(user_data["Duree_interview"].std())
+                    time_mean=round(user_data["Duree_interview"].mean())
+                    create_questionnaire_time_gauge(time_mean, time_std, temps_cible=None, titre="Durée des interviews")
+                    #nb_missing_longitude = user_data["Longitude_collected"].isna().sum()
+                    #make_progress_char((user_data.shape[0]-nb_missing_longitude)/user_data.shape[0],couleur="",titre=traduire_texte("Taux de localisation des ménages",lang))
                     st.write("")
                 
                 
@@ -832,7 +837,8 @@ def main():
                     
             with col[1]:
                 
-                make_multi_progress_bar(data_enq['id_enqueteur'],data_enq['progression'],colors=palette[0:11],titre=traduire_texte("Progression par Enqueteur",lang),height=700)
+                make_multi_progress_bar(data_enq['id_enqueteur'],data_enq['progression'],colors=palette[0:11],titre=traduire_texte("Progression par Enqueteur",lang),height=300)
+                create_crossed_bar_chart(user_data, "id_enqueteur", "Statut", title="Statut des questionnaires", colors=["#41be0f","#e78608","#0b58e6"],width="105%", height="500px",orientation="vertical",)
 
             cl_config_cart=st.columns([1,1,1,2])
             with cl_config_cart[0]:
@@ -870,9 +876,21 @@ def main():
                    show_outliers=True)
             
             with col_ch[1]:
-                pass
+                data_evolution=user_data.copy()
+                data_evolution["Date"] = data_evolution["Date"].astype(str)
+                create_crossed_bar_chart(data_evolution, "Date", "Statut", title="evolution",width="100%", height="500px",orientation="vertical",colors=['#1abc9c', "#0579ee", '#e67e22'])
             
-        with tabs[1]:
+            tcol=st.columns(2)
+            with tcol[0]:
+                enq_for_heat_map=st.multiselect(traduire_texte("Sélectionner un (des) enquêteur (s)",lang),user_data["id_enqueteur"].unique(),default=user_data["id_enqueteur"].unique(), key="Enq_for_map")
+            with tcol[1]:
+                pass
+                #enq_type=st.multiselect(traduire_texte("Sélectionner un type de questionnaire",lang),data_to_plot["Type"].unique(), default=data_to_plot["Type"].unique()[1])
+            data_superviz_heat_map=user_data[(user_data["id_enqueteur"].isin(enq_for_heat_map))]
+            cross_enq=pd.crosstab(data_superviz_heat_map["id_enqueteur"],data_superviz_heat_map["Date"])
+            make_st_heatmap_echat2(cross_enq,title=traduire_texte("Charge de travail accomplie par enquêteur",lang)) if data_superviz_heat_map.shape[0]>0 else None
+        
+            st.title("SECTION2: QUALITE ET APPRECIATION GENERALE DE LA COLLECTE")
             col1=st.columns([1,1])
             with col1[0]:
                 sbcl=st.columns([1,1])
@@ -885,30 +903,24 @@ def main():
                     display_single_metric_advanced(" Total", round(count_select_enq), delta=round(100*progress_select_enq , 2), color_scheme="teal")
                 st.write("")
                 avrg_time=data_select_enq["Duree_interview"].mean()
-                st.subheader(traduire_texte(f"Temps moyen de remplissage: {round(avrg_time)} min",lang)) 
                 with sbcl[1]:
-                   make_progress_char(progress_select_enq,couleur="",titre=traduire_texte("Progression de la collecte",lang))
-            st.write("")
+                    time_std_enq=round(data_select_enq["Duree_interview"].std())
+                    time_mean_enq=round(data_select_enq["Duree_interview"].mean())
+                    create_questionnaire_time_gauge(time_mean_enq, time_std_enq, temps_cible=None, titre="Durée des interviews",cle="jhckjdsk")
+                   #make_progress_char(progress_select_enq,couleur="",titre=traduire_texte("Progression de la collecte",lang))
+                st.write("")
             
                 
+                with col1[1]:
+                    box_fig = px.box(user_data, x="id_enqueteur", y="Duree_interview", color="id_enqueteur",
+                                        title=traduire_texte("Distribution du temps de remplissage en minute par enquêteur", lang),
+                                        height=400)
+                    st.plotly_chart(box_fig)
+        with tabs[1]:
+            pass
                 
-            st.write("")
-            with col1[1]:
-                box_fig = px.box(user_data, x="id_enqueteur", y="Duree_interview", color="id_enqueteur",
-                                    title=traduire_texte("Distribution du temps de remplissage en minute par enquêteur", lang),
-                                    height=400)
-                st.plotly_chart(box_fig)
                 
-                
-            tcol=st.columns(2)
-            with tcol[0]:
-                enq_for_heat_map=st.multiselect(traduire_texte("Sélectionner un (des) enquêteur (s)",lang),user_data["id_enqueteur"].unique(),default=user_data["id_enqueteur"].unique(), key="Enq_for_map")
-            with tcol[1]:
-                pass
-                #enq_type=st.multiselect(traduire_texte("Sélectionner un type de questionnaire",lang),data_to_plot["Type"].unique(), default=data_to_plot["Type"].unique()[1])
-            data_superviz_heat_map=user_data[(user_data["id_enqueteur"].isin(enq_for_heat_map))]
-            cross_enq=pd.crosstab(data_superviz_heat_map["id_enqueteur"],data_superviz_heat_map["Date"])
-            make_st_heatmap_echat2(cross_enq,title=traduire_texte("Charge de travail accomplie par enquêteur",lang)) if data_superviz_heat_map.shape[0]>0 else None
+            
             
         
 if __name__ == "__main__":
