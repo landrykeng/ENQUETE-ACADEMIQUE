@@ -788,7 +788,7 @@ def main():
         
         tabs = st.tabs([
             f"📈 {traduire_texte('ANALYSE GENERALE', lang)}", 
-            f"📊 {traduire_texte('PERFORMANCE ET QUALITE DES DONNEES', lang)}"
+            f"💫 {traduire_texte('A propos', lang)}"
             ])
         
         with tabs[0]:
@@ -937,11 +937,29 @@ def main():
                      height="400px", cle="kjdsnk", colors = ["#CC6606", "#BECA10", "#36BD14"], 
                      show_percentages=True, chart_type="bar", stack_mode="percentage")
                     
-        with tabs[1]:
-            pass
+        with tabs[1]: 
+            pc=st.columns(3)
+            with pc[0]:
+                sample_data = {
+                'name': 'Landry KENGNE',
+                'title': 'Statistician',
+                'about': '.',
+                'email': 'landry.kengne99@gmail.com',
+                'phone': '+237 6 98 28 05 37',
+                'skills': ['Statistiques', 'Economics', 'Dashbord conceptor', 'Data analist']
+            }
+                create_simple_background_profile(
+                name=sample_data['name'],
+                title=sample_data['title'],
+                about_text=sample_data['about'],
+                image_path="conceptor.jpg",
+                email=sample_data['email'],
+                phone=sample_data['phone'],
+                skills=sample_data['skills'],
+                theme_color="#CC6606",
+                height=700
+            )
                 
-                
-            
             
         
 if __name__ == "__main__":

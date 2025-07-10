@@ -17,6 +17,11 @@ from streamlit_folium import st_folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import folium_static
 import branca.colormap as cm
+import streamlit as st
+import base64
+import os
+from pathlib import Path
+from typing import Optional, Dict, List
 
 from math import radians, cos, sin, asin, sqrt
 
@@ -2132,3 +2137,454 @@ def create_pie_chart_from_df(df, column, style="donut", title="", colors=None,
     
     # Afficher le graphique
     st_echarts(options=option, height=height, key=cle)
+    
+import streamlit as st
+import base64
+import os
+from pathlib import Path
+from typing import Optional, List
+from PIL import Image
+import io
+
+def get_image_as_base64_optimized(image_path: str, max_size: tuple = (400, 400)) -> Optional[str]:
+    """
+    Convertit et optimise une image en base64 pour éviter les problèmes de performance.
+    """
+    try:
+        if not os.path.exists(image_path):
+            return None
+        
+        # Ouvrir et redimensionner l'image si nécessaire
+        with Image.open(image_path) as img:
+            # Convertir en RGB si nécessaire
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+            
+            # Redimensionner si trop grande
+            if img.size[0] > max_size[0] or img.size[1] > max_size[1]:
+                img.thumbnail(max_size, Image.Resampling.LANCZOS)
+            
+            # Sauvegarder en bytes
+            buffer = io.BytesIO()
+            img.save(buffer, format='JPEG', quality=85, optimize=True)
+            buffer.seek(0)
+            
+            return base64.b64encode(buffer.getvalue()).decode()
+            
+    except Exception as e:
+        st.warning(f"Erreur lors du traitement de l'image {image_path}: {e}")
+        return None
+
+def create_simple_background_profile(name: str, title: str, about_text: str,
+                                   image_path: Optional[str] = None,
+                                   email: Optional[str] = None,
+                                   phone: Optional[str] = None,
+                                   skills: Optional[List[str]] = None,
+                                   theme_color: str = "#4e8df5",
+                                   height: int = 400):
+    """
+    Version simplifiée et plus stable de la carte profil avec background.
+    """
+    
+    # Validation
+    if not name or not title or not about_text:
+        st.error("Les paramètres name, title et about_text sont obligatoires")
+        return
+    
+    # Container principal avec style de base
+    with st.container():
+        # ID unique pour éviter les conflits
+        card_id = f"simple-bg-{abs(hash(name + title)) % 10000}"
+        
+        # Gestion de l'image optimisée
+        background_css = ""
+        if image_path and os.path.exists(image_path):
+            img_base64 = get_image_as_base64_optimized(image_path)
+            if img_base64:
+                background_css = f"""
+                background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                                 url('data:image/jpeg;base64,{img_base64}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                """
+        
+        # Si pas d'image, utiliser un gradient
+        if not background_css:
+            background_css = f"""
+            background: linear-gradient(135deg, {theme_color}cc, {theme_color}88, {theme_color}44);
+            """
+        
+        # CSS simplifié et robuste
+        st.markdown(f"""
+        <style>
+        .{card_id} {{
+            {background_css}
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            min-height: {height}px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            text-align: left;
+            color: white;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            position: relative;
+        }}
+
+        .{card_id} .profile-content {{
+            z-index: 2;
+            position: relative;
+            width: 100%;
+        }}
+
+        .{card_id} .profile-name {{
+            font-size: 58px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            text-align: right;
+        }}
+
+        .{card_id} .profile-title {{
+            font-size: 18px;
+            background: rgba(255,255,255,0.1);
+            color: #ffffff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 500;
+            text-align: right;
+        }}
+
+        .{card_id} .profile-about {{
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            text-align: left;
+        }}
+
+        .{card_id} .profile-contacts {{
+            margin-bottom: 15px;
+            text-align: left;
+        }}
+
+        .{card_id} .contact-item {{
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 15px;
+            display: inline-block;
+            font-size: 14px;
+        }}
+
+        .{card_id} .contact-item a {{
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }}
+
+        .{card_id} .skills-section {{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 8px;
+            text-align: left;
+        }}
+
+        .{card_id} .skill-tag {{
+            background: rgba(255,255,255,0.2);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }}
+        </style>
+        """, unsafe_allow_html=True)
+        
+        # Construction du contenu avec validation
+        contacts_html = ""
+        if email or phone:
+            contact_items = []
+            if email:
+                contact_items.append(f'<span class="contact-item">📧 <a href="mailto:{email}">{email}</a></span>')
+            if phone:
+                contact_items.append(f'<span class="contact-item">📞 {phone}</span>')
+            contacts_html = f'<div class="profile-contacts">{"".join(contact_items)}</div>'
+        
+        skills_html = ""
+        if skills:
+            skill_tags = [f'<span class="skill-tag">{skill}</span>' for skill in skills if skill]
+            if skill_tags:
+                skills_html = f'<div class="skills-section">{"".join(skill_tags)}</div>'
+        
+        # Affichage de la carte
+        card_html = f"""
+        <div class="{card_id}">
+            <div class="profile-content">
+            <div class="profile-name" style="font-size: 88px;">{name}</div>
+            <div class="profile-title">{title}</div>
+            {contacts_html}
+            {skills_html}
+            <div class="profile-about">{about_text}</div>
+            </div>
+        </div>
+        """
+        
+        st.markdown(card_html, unsafe_allow_html=True)
+
+def create_overlay_profile_card(name: str, title: str, about_text: str,
+                               image_path: Optional[str] = None,
+                               email: Optional[str] = None,
+                               phone: Optional[str] = None,
+                               skills: Optional[List[str]] = None,
+                               theme_color: str = "#4e8df5"):
+    """
+    Version alternative avec overlay en utilisant les colonnes Streamlit.
+    """
+    
+    if image_path and os.path.exists(image_path):
+        # Afficher l'image comme background avec Streamlit natif
+        col1, col2 = st.columns([1, 1])
+        
+        with col1:
+            # Afficher l'image
+            try:
+                st.image(image_path, use_container_width=True)
+            except Exception as e:
+                st.error(f"Impossible d'afficher l'image: {e}")
+        
+        with col2:
+            # Informations avec style
+            st.markdown(f"""
+            <div style="
+                background: linear-gradient(135deg, {theme_color}ee, {theme_color}cc);
+                padding: 30px;
+                border-radius: 15px;
+                color: white;
+                height: 100%;
+                min-height: 300px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            ">
+                <h2 style="margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{name}</h2>
+                <h4 style="color: #FFD700; margin-bottom: 15px;">{title}</h4>
+                <p style="line-height: 1.6; margin-bottom: 15px;">{about_text}</p>
+                
+                {"<p><strong>📧</strong> " + email + "</p>" if email else ""}
+                {"<p><strong>📞</strong> " + phone + "</p>" if phone else ""}
+                
+                {'<div style="margin-top: 15px;">' + "".join([f'<span style="background: rgba(255,255,255,0.2); padding: 4px 8px; margin: 2px; border-radius: 8px; font-size: 12px;">{skill}</span>' for skill in (skills or [])]) + '</div>' if skills else ""}
+            </div>
+            """, unsafe_allow_html=True)
+    
+    else:
+        # Version sans image
+        create_simple_background_profile(name, title, about_text, None, email, phone, skills, theme_color)
+
+def create_streamlit_native_profile(name: str, title: str, about_text: str,
+                                  image_path: Optional[str] = None,
+                                  email: Optional[str] = None,
+                                  phone: Optional[str] = None,
+                                  skills: Optional[List[str]] = None,
+                                  theme_color: str = "#4e8df5"):
+    """
+    Version 100% Streamlit natif - la plus stable.
+    """
+    
+    # Container avec bordure colorée
+    with st.container():
+        st.markdown(f"""
+        <div style="
+            border-left: 5px solid {theme_color};
+            background: linear-gradient(90deg, {theme_color}10, transparent);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+        ">
+        """, unsafe_allow_html=True)
+        
+        # Layout en colonnes si image présente
+        if image_path and os.path.exists(image_path):
+            col1, col2 = st.columns([1, 2])
+            
+            with col1:
+                try:
+                    st.image(image_path, width=200)
+                except:
+                    st.error("Image non trouvée")
+            
+            with col2:
+                st.markdown(f"### {name}")
+                st.markdown(f"**{title}**")
+                st.write(about_text)
+                
+                if email:
+                    st.write(f"📧 {email}")
+                if phone:
+                    st.write(f"📞 {phone}")
+                
+                if skills:
+                    st.write("**Compétences:**")
+                    st.write(" • ".join(skills))
+        
+        else:
+            # Sans image
+            st.markdown(f"### {name}")
+            st.markdown(f"**{title}**")
+            st.write(about_text)
+            
+            if email or phone:
+                st.write("**Contact:**")
+                if email:
+                    st.write(f"📧 {email}")
+                if phone:
+                    st.write(f"📞 {phone}")
+            
+            if skills:
+                st.write("**Compétences:**")
+                st.write(" • ".join(skills))
+        
+        st.markdown("</div>", unsafe_allow_html=True)
+
+# Interface de test et diagnostic
+def test_background_profiles():
+    """
+    Interface de test avec plusieurs versions pour identifier les problèmes.
+    """
+    
+    st.title("🔧 Test Profils Background - Versions Corrigées")
+    
+    # Données d'exemple
+    sample_data = {
+        'name': 'Landry KENGNE',
+        'title': 'ISE',
+        'about': 'STATISTICIEN',
+        'email': 'landry.kengne99@gmail.com',
+        'phone': '+237 6 98 28 05 37',
+        'skills': ['Statistiques', 'Data Analysis', 'Python', 'R']
+    }
+    
+    # Sélection de la version
+    version = st.selectbox(
+        "Choisir la version à tester:",
+        ["Version Simplifiée", "Version Overlay", "Version Native Streamlit", "Diagnostic"]
+    )
+    
+    # Upload d'image pour test
+    uploaded_file = st.file_uploader("Choisir une image", type=['png', 'jpg', 'jpeg'])
+    
+    image_path = None
+    if uploaded_file is not None:
+        # Sauvegarder temporairement
+        temp_path = f"temp_{uploaded_file.name}"
+        with open(temp_path, "wb") as f:
+            f.write(uploaded_file.getbuffer())
+        image_path = temp_path
+    
+    # Options de personnalisation
+    with st.sidebar:
+        st.header("Personnalisation")
+        theme_color = st.color_picker("Couleur thème", "#4e8df5")
+        height = st.slider("Hauteur (px)", 300, 600, 400)
+    
+    # Test selon la version sélectionnée
+    if version == "Version Simplifiée":
+        st.subheader("🛠️ Version Simplifiée (Recommandée)")
+        st.info("Version optimisée avec CSS simplifié et images redimensionnées")
+        
+        create_simple_background_profile(
+            name=sample_data['name'],
+            title=sample_data['title'],
+            about_text=sample_data['about'],
+            image_path=image_path,
+            email=sample_data['email'],
+            phone=sample_data['phone'],
+            skills=sample_data['skills'],
+            theme_color=theme_color,
+            height=height
+        )
+    
+    elif version == "Version Overlay":
+        st.subheader("🎨 Version Overlay")
+        st.info("Version avec colonnes Streamlit et overlay CSS")
+        
+        create_overlay_profile_card(
+            name=sample_data['name'],
+            title=sample_data['title'],
+            about_text=sample_data['about'],
+            image_path=image_path,
+            email=sample_data['email'],
+            phone=sample_data['phone'],
+            skills=sample_data['skills'],
+            theme_color=theme_color
+        )
+    
+    elif version == "Version Native Streamlit":
+        st.subheader("🏠 Version Native (Plus Stable)")
+        st.info("Version 100% composants Streamlit natifs")
+        
+        create_streamlit_native_profile(
+            name=sample_data['name'],
+            title=sample_data['title'],
+            about_text=sample_data['about'],
+            image_path=image_path,
+            email=sample_data['email'],
+            phone=sample_data['phone'],
+            skills=sample_data['skills'],
+            theme_color=theme_color
+        )
+    
+    else:  # Diagnostic
+        st.subheader("🩺 Diagnostic")
+        
+        st.write("**Informations système:**")
+        st.write(f"- Version Streamlit: {st.__version__}")
+        
+        if image_path:
+            st.write("**Test image:**")
+            try:
+                img = Image.open(image_path)
+                st.write(f"- Format: {img.format}")
+                st.write(f"- Mode: {img.mode}")
+                st.write(f"- Taille: {img.size}")
+                
+                # Test de la conversion base64
+                img_b64 = get_image_as_base64_optimized(image_path)
+                if img_b64:
+                    st.success("✅ Conversion base64 réussie")
+                    st.write(f"- Taille base64: {len(img_b64)} caractères")
+                else:
+                    st.error("❌ Échec conversion base64")
+                    
+            except Exception as e:
+                st.error(f"Erreur lors de l'analyse: {e}")
+        
+        # Test CSS simple
+        st.write("**Test CSS:**")
+        st.markdown("""
+        <div style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4); 
+                    padding: 20px; 
+                    border-radius: 10px; 
+                    color: white; 
+                    text-align: center;">
+            Si vous voyez ce texte stylisé, le CSS fonctionne ✅
+        </div>
+        """, unsafe_allow_html=True)
+    
+    # Nettoyage
+    if uploaded_file and image_path and os.path.exists(image_path):
+        try:
+            os.remove(image_path)
+        except:
+            pass
+
+# Pour lancer: streamlit run nom_du_fichier.py
