@@ -777,10 +777,10 @@ def main():
         
         with tabs[0]:
             with st.expander("Description des indicateurs"):
-                st.subheader("1. Taux de localisation des ménages: Donne la proportion des ménages dont les coordonnées géographiques ont été collectées")
-                st.subheader("2. Les questionnaire soumis sont ceux achevé par les enquêteurs en attente d'approbation des controleurs")
-                st.subheader("3. Les Questionnaire Validé par les controleur sont les questionnaire en attente d'approbation du QG. ")
-                st.subheader("4. Les questionnaire approuvé par le QG sont les questionnaires définitifs: à la fin de l'enquête, tous les questionnaires doivent avoir ce statut")
+                
+                st.subheader("1. Les questionnaire soumis sont ceux achevé par les enquêteurs en attente d'approbation des controleurs")
+                st.subheader("2. Les Questionnaire Validé par les controleur sont les questionnaire en attente d'approbation du QG. ")
+                st.subheader("3. Les questionnaire approuvé par le QG sont les questionnaires définitifs: à la fin de l'enquête, tous les questionnaires doivent avoir ce statut")
             
             st.title("SECTION1: STATISTIQUES SUR LES QUESTIONNAIRES SOUMIS")
             ca=st.columns(3)
@@ -829,8 +829,11 @@ def main():
                 with sublcb1[0]:
                     make_progress_char(progress_all,couleur="",titre=traduire_texte("Progression de la collecte",lang))
                 with sublcb1[1]:
-                    nb_missing_longitude = df_to_plot["Longitude_collected"].isna().sum()
-                    make_progress_char((df_to_plot.shape[0]-nb_missing_longitude)/df_to_plot.shape[0],couleur="",titre=traduire_texte("Taux de localisation des ménages",lang))
+                    time_std=round(data["Duree_interview"].std())
+                    time_mean=round(data["Duree_interview"].mean())
+                    create_questionnaire_time_gauge(time_mean, time_std, temps_cible=None, titre="Durée des interviews")
+                    #nb_missing_longitude = df_to_plot["Longitude_collected"].isna().sum()
+                    #make_progress_char((df_to_plot.shape[0]-nb_missing_longitude)/df_to_plot.shape[0],couleur="",titre=traduire_texte("Taux de localisation des ménages",lang))
                     st.write("")
                 
                 
@@ -849,7 +852,7 @@ def main():
             with col[1]:
                 
                 make_multi_progress_bar(data_arr['arrondissement'],data_arr['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=700)
-                st.metric(f"""<h1>Temps moyen de remplissage d'un questionnaire</h1>""",20 , delta=5)
+                
                 
             st.title("SECTION 2: STATISTIQUES SUR LES QUESTIONNAIRES VALIDES PAR LE QG ET LES CONTROLEURS")
             

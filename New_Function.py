@@ -1362,4 +1362,184 @@ def create_choropleth_map(gdf, geometry_col='geometry', value_col='nombre_questi
     folium_static(m, width=width, height=height)
     return m
 
+
+def create_questionnaire_time_gauge(temps_remplissage, ecart_type, temps_cible=None, titre="Temps de Remplissage du Questionnaire"):
+    """
+    Crée un graphique de jauge pour visualiser le temps de remplissage d'un questionnaire
+    avec indication de l'écart-type en utilisant streamlit-echarts.
+    
+    Parameters:
+    -----------
+    temps_remplissage : float
+        Temps moyen de remplissage en minutes
+    ecart_type : float
+        Écart-type du temps de remplissage en minutes
+    temps_cible : float, optional
+        Temps cible souhaité en minutes (défaut: None)
+    titre : str
+        Titre du graphique
+    
+    Returns:
+    --------
+    Affiche directement le graphique dans Streamlit
+    """
+    
+    # Calcul des limites basées sur les données
+    temps_min = max(0, temps_remplissage - 2 * ecart_type)
+    temps_max = temps_remplissage + 2 * ecart_type
+    
+    # Si un temps cible est défini, ajuster les limites
+    if temps_cible:
+        temps_max = max(temps_max, temps_cible * 1.2)
+    
+    # Définition des seuils de couleur
+    seuil_excellent = temps_max * 0.3
+    seuil_bon = temps_max * 0.6
+    seuil_moyen = temps_max * 0.8
+    
+    # Configuration de la jauge ECharts
+    option = {
+        "title": {
+            "text": titre,
+            "left": "center",
+            "top": "10%",
+            "textStyle": {
+                "fontSize": 18,
+                "fontWeight": "bold",
+                "color": "#333"
+            }
+        },
+        "series": [
+            {
+                "name": "Temps de remplissage",
+                "type": "gauge",
+                "center": ["50%", "60%"],
+                "radius": "75%",
+                "min": 0,
+                "max": temps_max,
+                "splitNumber": 5,
+                "startAngle": 225,
+                "endAngle": -45,
+                "itemStyle": {
+                    "color": "#1f77b4"
+                },
+                "progress": {
+                    "show": True,
+                    "width": 15
+                },
+                "pointer": {
+                    "show": True,
+                    "length": "75%",
+                    "width": 8,
+                    "itemStyle": {
+                        "color": "#1f77b4"
+                    }
+                },
+                "axisLine": {
+                    "lineStyle": {
+                        "width": 20,
+                        "color": [
+                            [seuil_excellent/temps_max, "#90EE90"],  # vert clair
+                            [seuil_bon/temps_max, "#FFD700"],       # jaune
+                            [seuil_moyen/temps_max, "#FFA500"],     # orange
+                            [1, "#F08080"]                          # rouge clair
+                        ]
+                    }
+                },
+                "axisTick": {
+                    "distance": -30,
+                    "length": 8,
+                    "lineStyle": {
+                        "color": "#fff",
+                        "width": 2
+                    }
+                },
+                "splitLine": {
+                    "distance": -30,
+                    "length": 30,
+                    "lineStyle": {
+                        "color": "#fff",
+                        "width": 4
+                    }
+                },
+                "axisLabel": {
+                    "color": "#333",
+                    "distance": 40,
+                    "fontSize": 12,
+                    "formatter": "{value} min"
+                },
+                "detail": {
+                    "valueAnimation": True,
+                    "formatter": "{value} min",
+                    "color": "#1f77b4",
+                    "fontSize": 20,
+                    "fontWeight": "bold",
+                    "offsetCenter": [0, "35%"]
+                },
+                "data": [
+                    {
+                        "value": temps_remplissage,
+                        "name": "Temps moyen"
+                    }
+                ]
+            }
+        ],
+        "graphic": [
+            {
+                "type": "text",
+                "left": "center",
+                "top": "85%",
+                "style": {
+                    "text": f"Écart-type: ±{ecart_type:.1f} min",
+                    "fontSize": 14,
+                    "fontWeight": "bold",
+                    "fill": "#666"
+                }
+            },
+            {
+                "type": "text",
+                "left": "center",
+                "top": "90%",
+                "style": {
+                    "text": f"Plage: {temps_remplissage-ecart_type:.1f} - {temps_remplissage+ecart_type:.1f} min",
+                    "fontSize": 12,
+                    "fill": "#888"
+                }
+            }
+        ]
+    }
+    
+    # Ajouter l'indication du temps cible si fourni
+    if temps_cible:
+        option["graphic"].append({
+            "type": "text",
+            "left": "center",
+            "top": "95%",
+            "style": {
+                "text": f"Objectif: {temps_cible:.1f} min",
+                "fontSize": 12,
+                "fontWeight": "bold",
+                "fill": "#d62728" if temps_remplissage > temps_cible else "#2ca02c"
+            }
+        })
+        
+        # Ajouter une ligne de référence pour le temps cible
+        option["series"][0]["markLine"] = {
+            "data": [
+                {
+                    "type": "average",
+                    "name": "Objectif",
+                    "yAxis": temps_cible,
+                    "lineStyle": {
+                        "color": "#d62728",
+                        "width": 3,
+                        "type": "dashed"
+                    }
+                }
+            ]
+        }
+    
+    # Afficher la jauge
+    st_echarts(options=option, height="400px", key="gauge_questionnaire")
+
     
