@@ -839,15 +839,17 @@ def main():
                 
                 make_multi_progress_bar(data_enq['id_enqueteur'],data_enq['progression'],colors=palette[0:11],titre=traduire_texte("Progression par Enqueteur",lang),height=300)
                 create_crossed_bar_chart(user_data, "id_enqueteur", "Statut", title="Statut des questionnaires", colors=["#41be0f","#e78608","#0b58e6"],width="105%", height="500px",orientation="vertical",)
-            c5=st.columns(2)
+            c5=st.columns(3)
             with c5[0]:
+                create_pie_chart_from_df(user_data, "Resultat_collecte", style="donut", title="Statut global", colors=None,)
+            with c5[1]:
                 data_qest=user_data.groupby("id_enqueteur").agg({"Nb_questions_sans_reponse":"size"})
                 mean_qst_sans_rep=round(data_qest["Nb_questions_sans_reponse"].mean())
                 std_qst_sans_rep=round(data_qest["Nb_questions_sans_reponse"].mean())
                 create_missing_questions_gauge(mean_qst_sans_rep, std_qst_sans_rep, total_questions=None, 
                                  objectif_max=None, titre="Total Questions Sans Réponse", cle="jhdskj")
-            with c5[1]:
-                pass
+            with c5[2]:
+                create_pie_chart_from_df(user_data, "Appreciation_qualite_interview", style="donut", title="Appréciation générale", colors=None,cle="kjndflkj")
             
             cl_config_cart=st.columns([1,1,1,2])
             with cl_config_cart[0]:

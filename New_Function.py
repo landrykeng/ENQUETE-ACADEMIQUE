@@ -1927,3 +1927,208 @@ def create_missing_questions_gauge(questions_manquantes_moy, ecart_type, total_q
     
     # Afficher la jauge
     st_echarts(options=option, height="450px", key=cle)
+    
+
+def create_pie_chart_from_df(df, column, style="donut", title="", colors=None, 
+                            show_legend=True, show_labels=True, show_percentages=True,
+                            donut_radius="35%", height="400px", cle="pie_chart",
+                            sort_values=True, top_n=None, other_threshold=None):
+    """
+    Crée un graphique en secteur (camembert) à partir d'un DataFrame et d'une colonne.
+    
+    Parameters:
+    -----------
+    df : pd.DataFrame
+        DataFrame contenant les données
+    column : str
+        Nom de la colonne à analyser
+    style : str
+        Style du graphique: "donut" ou "disque" (default: "donut")
+    title : str
+        Titre du graphique (si vide, utilise le nom de la colonne)
+    colors : list, optional
+        Liste de couleurs personnalisées
+    show_legend : bool
+        Afficher la légende (default: True)
+    show_labels : bool
+        Afficher les étiquettes sur les secteurs (default: True)
+    show_percentages : bool
+        Afficher les pourcentages (default: True)
+    donut_radius : str
+        Rayon intérieur pour le style donut (default: "50%")
+    height : str
+        Hauteur du graphique (default: "400px")
+    cle : str
+        Clé unique pour le graphique
+    sort_values : bool
+        Trier les valeurs par ordre décroissant (default: True)
+    top_n : int, optional
+        Limiter aux N premières catégories
+    other_threshold : float, optional
+        Regrouper les catégories < seuil% dans "Autres"
+    
+    Returns:
+    --------
+    dict : Statistiques et données utilisées pour le graphique
+    """
+    
+    # Vérifications
+    if column not in df.columns:
+        st.error(f"La colonne '{column}' n'existe pas dans le DataFrame")
+        return None
+    
+    # Supprimer les valeurs manquantes
+    df_clean = df[column].dropna()
+    
+    if df_clean.empty:
+        st.warning("Aucune donnée valide trouvée après suppression des valeurs manquantes")
+        return None
+    
+    # Compter les occurrences
+    value_counts = df_clean.value_counts()
+    
+    if sort_values:
+        value_counts = value_counts.sort_values(ascending=False)
+    
+    # Limiter aux top N si spécifié
+    if top_n and top_n < len(value_counts):
+        top_values = value_counts.head(top_n)
+        others_count = value_counts.tail(len(value_counts) - top_n).sum()
+        if others_count > 0:
+            top_values['Autres'] = others_count
+        value_counts = top_values
+    
+    # Regrouper les petites catégories si seuil spécifié
+    if other_threshold:
+        total = value_counts.sum()
+        threshold_count = (other_threshold / 100) * total
+        
+        main_categories = value_counts[value_counts >= threshold_count]
+        small_categories = value_counts[value_counts < threshold_count]
+        
+        if len(small_categories) > 0:
+            others_sum = small_categories.sum()
+            main_categories['Autres'] = others_sum
+            value_counts = main_categories
+    
+    # Préparer les données
+    labels = value_counts.index.tolist()
+    values = value_counts.values.tolist()
+    
+    # Couleurs par défaut
+    if colors is None:
+        colors = [
+            "#0DB329", "#E4E917", "#E79D19", "#E32B1D", "#0CA0B4", "#064C56",
+            "#8B4513", "#FF69B4", "#32CD32", "#FF4500", "#9370DB", "#20B2AA",
+            "#FFD700", "#FF6347", "#40E0D0", "#EE82EE", "#98FB98", "#F0E68C"
+        ]
+    
+    # Étendre les couleurs si nécessaire
+    while len(colors) < len(values):
+        colors.extend(colors)
+    
+    # Préparation des données pour ECharts
+    chart_data = []
+    for i, (label, value) in enumerate(zip(labels, values)):
+        chart_data.append({
+            "name": str(label),
+            "value": value,
+            "itemStyle": {"color": colors[i % len(colors)]}
+        })
+    
+    # Configuration du rayon selon le style
+    if style.lower() == "donut":
+        radius = [donut_radius, "80%"]
+    else:  # style == "disque"
+        radius = ["0%", "80%"]
+    
+    # Configuration des labels
+    label_config = {
+        "show": show_labels,
+        "position": "outside" if style.lower() == "disque" else "inside",
+        "fontSize": 12,
+        "fontWeight": "bold"
+    }
+    
+    if show_percentages:
+        label_config["formatter"] = "{b}\n{c} ({d}%)"
+    else:
+        label_config["formatter"] = "{b}\n{c}"
+    
+    
+    # Configuration du graphique
+    option = {
+        "title": {
+            "text": title,
+            "left": "center",
+            "top": "5%",
+            "textStyle": {
+                "fontSize": 18,
+                "fontWeight": "bold",
+                "color": "#333"
+            }
+        },
+        "tooltip": {
+            "trigger": "item",
+            "formatter": "{b}: {c} ({d}%)<br/>Sur {total} observations".replace("{total}", str(value_counts.sum()))
+        },
+        "legend": {
+            "show": show_legend,
+            "type": "scroll",
+            "orient": "horizontal",
+            "bottom": 10,
+            "left": "center",
+            "data": labels
+        },
+        "series": [
+            {
+                "name": column,
+                "type": "pie",
+                "radius": radius,
+                "center": ["40%", "50%"],
+                "data": chart_data,
+                "emphasis": {
+                    "itemStyle": {
+                        "shadowBlur": 10,
+                        "shadowOffsetX": 0,
+                        "shadowColor": "rgba(0, 0, 0, 0.5)"
+                    }
+                },
+                "label": label_config,
+                "labelLine": {
+                    "show": show_labels and style.lower() == "disque",
+                    "length": 15,
+                    "length2": 10
+                }
+            }
+        ]
+    }
+    
+    # Ajustements pour le style donut
+    if style.lower() == "donut":
+        total = sum(values)
+        option["graphic"] = [
+            {
+                "type": "text",
+                "left": "37%",
+                "top": "58%",
+                "style": {
+                    "text": f"Total\n{total}",
+                    "textAlign": "center",
+                    "fontSize": 16,
+                    "fontWeight": "bold",
+                    "fill": "#333"
+                }
+            }
+        ]
+        
+        option["series"][0]["label"]["position"] = "center"
+        option["series"][0]["label"]["formatter"] = "{d}%"
+        option["series"][0]["emphasis"]["label"] = {
+            "show": True,
+            "fontSize": 20,
+            "fontWeight": "bold"
+        }
+    
+    # Afficher le graphique
+    st_echarts(options=option, height=height, key=cle)
