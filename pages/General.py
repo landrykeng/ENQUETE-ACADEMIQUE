@@ -929,7 +929,7 @@ def main():
                 st.subheader(traduire_texte(" progression réelle par arrondissemnt",lang))
                 
                 
-                make_multi_progress_bar(data_arr_qg['arrondissement'],data_arr_qg['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=700)
+                make_multi_progress_bar(data_arr_qg['arrondissement'],data_arr_qg['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=600)
             
             st.header("EVOLUTION DE LA COLLECTE")
             data_evolution=data.copy()
