@@ -778,6 +778,9 @@ def main():
         with tabs[0]:
             with st.expander("Description des indicateurs"):
                 st.subheader("1. Taux de localisation des ménages: Donne la proportion des ménages dont les coordonnées géographiques ont été collectées")
+                st.subheader("2. Les questionnaire soumis sont ceux achevé par les enquêteurs en attente d'approbation des controleurs")
+                st.subheader("3. Les Questionnaire Validé par les controleur sont les questionnaire en attente d'approbation du QG. ")
+                st.subheader("4. Les questionnaire approuvé par le QG sont les questionnaires définitifs: à la fin de l'enquête, tous les questionnaires doivent avoir ce statut")
             
             st.title("SECTION1: STATISTIQUES SUR LES QUESTIONNAIRES SOUMIS")
             ca=st.columns(3)
@@ -846,9 +849,11 @@ def main():
             with col[1]:
                 
                 make_multi_progress_bar(data_arr['arrondissement'],data_arr['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=700)
-
-            st.title("SECTION 2: STATISTIQUES SUR LES QUESTIONNAIRES VALIDES PAR LE QG")
-            data_qg=data[data["Rejets_siege"]=="Approuvé par le QG"]
+                st.metric(f"""<h1>Temps moyen de remplissage d'un questionnaire</h1>""",20 , delta=5)
+                
+            st.title("SECTION 2: STATISTIQUES SUR LES QUESTIONNAIRES VALIDES PAR LE QG ET LES CONTROLEURS")
+            
+            data_qg=data[data["Statut"].isin(["Approuvé par le QG","Approuvé par les controleurs"])]
             ca2=st.columns(3)
             nb_tontine_qg = (data_qg['Questionnaire'] == 'Tontine').sum()
             nb_dechet_qg = (data_qg['Questionnaire'] == 'Dechet').sum()
@@ -869,9 +874,11 @@ def main():
             with c2[0]:
                 Type_questionnaire2=st.multiselect("Thème de l'enquête", options=data["Questionnaire"].unique(),default=data["Questionnaire"].unique(),key="Type2")
                 df_to_plot=df_to_plot[df_to_plot["Questionnaire"].isin(Type_questionnaire2)]
-                create_crossed_bar_chart(df_to_plot, "arrondissement", "Rejets_superviseur", title="Diagramme des validation", colors=["orange","red"],width="100%", height="500px",orientation="vertical",)
+                #create_bar_chart(data, "Statut", title="Statut des questionnaires", color="#181ce2", width="100%", height="400px",orientation="vertical")
+                create_crossed_bar_chart(df_to_plot, "Statut", "Questionnaire", title="Statut des questionnaires", colors=["#41be0f","#e78608","#0b58e6"],width="105%", height="500px",orientation="vertical",)
             with c2[1]:
-                create_crossed_bar_chart(df_to_plot, "arrondissement", "Rejets_siege", title="Diagramme des validation", colors=["green","red"],width="100%", height="500px",orientation="vertical",)
+                pass
+                create_crossed_bar_chart(df_to_plot, "arrondissement", "Statut", title="Diagramme des validations", colors=["#41be0f","#e78608","#0b58e6"],width="100%", height="500px",orientation="vertical",)
             
             
             
@@ -911,7 +918,10 @@ def main():
                 
                 make_multi_progress_bar(data_arr_qg['arrondissement'],data_arr_qg['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=700)
             
-            
+            st.header("EVOLUTION DE LA COLLECTE")
+            data_evolution=data.copy()
+            data_evolution["Date"] = data_evolution["Date"].astype(str)
+            create_crossed_bar_chart(data_evolution, "Date", "Statut", title="evolution",width="100%", height="500px",orientation="vertical",)
             
         with tabs[1]:
             col1=st.columns([1,1])

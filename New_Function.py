@@ -829,7 +829,7 @@ def create_bar_chart_from_contingency(contingency_table,
             "xAxis": {
                 "type": "category",
                 "data": categories,
-                "name": var1_name,
+                #"name": var1_name,
                 "nameLocation": "middle",
                 "nameGap": 30,
                 "axisLabel": {"rotate": 45 if len(categories) > 8 else 0}
@@ -1333,7 +1333,7 @@ def create_choropleth_map(gdf, geometry_col='geometry', value_col='nombre_questi
             folium.Marker(
                 location=[centroid.y, centroid.x],
                 icon=folium.DivIcon(
-                    html=f'<div style="font-size: 19px; color: black; font-weight: bold; text-align: center; text-shadow: 1px 1px 1px white;">{row[label_col]}</div>',
+                    html=f'<div style="font-size: 19px; color: black; font-weight: bold; text-align: left; text-shadow: 1px 1px 1px white;">{row[label_col]}</div>',
                     icon_size=(40, 20),
                     icon_anchor=(20, 10)
                 )
