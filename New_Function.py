@@ -4,11 +4,12 @@ Auteur: Assistant IA
 Date: 2025
 """
 
-import pandas as pd
+
+from PIL import Image
+import io
 import streamlit as st
 from streamlit_echarts import st_echarts
 import numpy as np
-from typing import List, Optional, Union
 import geopandas as gpd
 import pandas as pd
 import folium
@@ -17,11 +18,10 @@ from streamlit_folium import st_folium
 from folium.plugins import MarkerCluster
 from streamlit_folium import folium_static
 import branca.colormap as cm
-import streamlit as st
 import base64
 import os
 from pathlib import Path
-from typing import Optional, Dict, List
+from typing import Optional, Dict, List, Union
 
 from math import radians, cos, sin, asin, sqrt
 
@@ -2138,13 +2138,7 @@ def create_pie_chart_from_df(df, column, style="donut", title="", colors=None,
     # Afficher le graphique
     st_echarts(options=option, height=height, key=cle)
     
-import streamlit as st
-import base64
-import os
-from pathlib import Path
-from typing import Optional, List
-from PIL import Image
-import io
+
 
 def get_image_as_base64_optimized(image_path: str, max_size: tuple = (400, 400)) -> Optional[str]:
     """
@@ -2588,3 +2582,135 @@ def test_background_profiles():
             pass
 
 # Pour lancer: streamlit run nom_du_fichier.py
+
+
+def make_multi_progress_bar_echart(labels, values, colors, titre="", width="100%", height="400px",cle="jdflkdfkjn"):
+    """
+    Crée un graphique de barres de progression multiples avec ECharts
+    """
+    
+    # Préparer les données pour chaque série
+    filled_series = []
+    empty_series = []
+    labels=labels.tolist()
+    values=values.tolist()
+    # Créer les données pour les barres pleines et vides
+    for i, (label, value, color) in enumerate(zip(labels, values, colors)):
+        filled_value = value * 100
+        empty_value = 100 - filled_value
+        
+        filled_series.append(filled_value)
+        empty_series.append(empty_value)
+    
+    # Configuration du graphique
+    option = {
+        'title': {
+            'text': titre,
+            'left': 'center',
+            'textStyle': {'fontSize': 16}
+        },
+        'grid': {
+            'left': '20%',
+            'right': '15%',
+            'top': '10%',
+            'bottom': '10%',
+            'containLabel': True
+        },
+        'xAxis': {
+            'type': 'value',
+            'max': 100,
+            'show': False,
+            'splitLine': {'show': False}
+        },
+        'yAxis': {
+            'type': 'category',
+            'data': labels,
+            'show': False,
+            'axisLine': {'show': False},
+            'axisTick': {'show': False}
+        },
+        'series': [
+            {
+                'name': 'Progression',
+                'type': 'bar',
+                'stack': 'total',
+                'data': [
+                    {
+                        'value': filled_series[i],
+                        'itemStyle': {
+                            'color': colors[i],
+                            'borderRadius': [2, 0, 0, 2]
+                        }
+                    } for i in range(len(labels))
+                ],
+                'barHeight': '60%',
+                'showBackground': False
+            },
+            {
+                'name': 'Restant',
+                'type': 'bar',
+                'stack': 'total',
+                'data': [
+                    {
+                        'value': empty_series[i],
+                        'itemStyle': {
+                            'color': 'rgba(0, 0, 0, 0.1)',
+                            'borderRadius': [0, 2, 2, 0]
+                        }
+                    } for i in range(len(labels))
+                ],
+                'barHeight': '60%',
+                'showBackground': False
+            }
+        ],
+        'animation': False,
+        'backgroundColor': 'transparent'
+    }
+    
+    # Ajouter les annotations avec graphic
+    graphics = []
+    
+    for i, (label, value, color) in enumerate(zip(labels, values, colors)):
+        # Calculer les positions
+        # Calculer la position verticale pour aligner le label avec la barre
+        y_pos = (len(labels)+1)*10-(i*(len(labels)+1)*10/ len(labels))
+        
+        # Label à gauche
+        graphics.append({
+            'type': 'text',
+            'left': '7%',
+            'top': f'{y_pos}%',
+            'style': {
+                'text': label,
+                'font': 'bold 24px Arial',
+                'fill': color,
+                'textAlign': 'left',
+                'textVerticalAlign': 'middle'
+            }
+        })
+        
+        # Pourcentage à droite de la barre
+        percentage_x = 35 + (value * 50)  # Position basée sur la valeur
+        val_y_pos=y_pos+1.5
+        graphics.append({
+            'type': 'text',
+            'left': f'{percentage_x}%',
+            'top': f'{val_y_pos}%',
+            'style': {
+                'text': f'{round(100 * value, 1)}%',
+                'font': 'bold 20px Arial',
+                'fill': color,
+                'textAlign': 'left',
+                'textVerticalAlign': 'middle'
+            }
+        })
+    
+    option['graphic'] = graphics
+    
+    # Afficher le graphique
+    st_echarts(
+        options=option,
+        width=width,
+        height=height,
+        key=cle  # Clé unique pour éviter les conflits
+    )

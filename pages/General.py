@@ -851,7 +851,7 @@ def main():
                     
             with col[1]:
                 
-                make_multi_progress_bar(data_arr['arrondissement'],data_arr['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=600)
+                make_multi_progress_bar_echart(data_arr['arrondissement'],data_arr['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=500)
                 create_pie_chart_from_df(data, "Resultat_collecte", style="donut", title="Statut global", colors=None,cle="sdhkdil")
             
             cb=st.columns(2)
@@ -865,14 +865,14 @@ def main():
                 create_missing_questions_gauge(mean_qst_sans_rep, std_qst_sans_rep, total_questions=None, 
                                  objectif_max=None, titre="Total Questions Sans Réponse", cle="jhdskj")
             st.title("SECTION 2: STATISTIQUES SUR LES QUESTIONNAIRES VALIDES PAR LE QG ET LES CONTROLEURS")
-            
-            data_qg=data[data["Statut"].isin(["Approuvé par le QG","Approuvé par les controleurs"])]
+
+            data_qg=data[data["Statut"]!="Soumis"]
             ca2=st.columns(3)
-            nb_tontine_qg = (data_qg['Questionnaire'] == 'Tontine').sum()
-            nb_dechet_qg = (data_qg['Questionnaire'] == 'Dechet').sum()
+            nb_tontine_qg = data_qg[data_qg['Questionnaire'] == 'Tontine'].shape[0]
+            nb_dechet_qg = data_qg[data_qg['Questionnaire'] == 'Dechet'].shape[0]
             
-            rep_tontine_qg=(data_rep['questionnaire'] == 'Tontine').sum()
-            rep_dechet_qg=(data_rep['questionnaire'] == 'Dechet').sum()
+            rep_tontine_qg=data_rep[data_rep['questionnaire'] == 'Tontine'].shape[0]
+            rep_dechet_qg=data_rep[data_rep['questionnaire'] == 'Dechet'].shape[0]
             
             with ca2[0]:
                 display_single_metric_advanced(" 💰Tontine",nb_tontine_qg, delta=round(100*nb_tontine_qg/rep_tontine_qg,2), color_scheme="blue")
@@ -901,8 +901,10 @@ def main():
             arr=st.multiselect(traduire_texte("Sélectionner les arrondissement",lang), options=data["arrondissement"].unique(), default=data["arrondissement"].unique())
             
             df_qg=data_qg[data_qg["Questionnaire"].isin(Type_questionnaire2)]
+            df_qg_rep=data_rep[data_rep["questionnaire"].isin(Type_questionnaire2)]
+            
             a_test=pd.DataFrame(df_qg["arrondissement"].value_counts())
-            b_test=pd.DataFrame(df_rep_to_plot["arrondissement"].value_counts())
+            b_test=pd.DataFrame(df_qg_rep["arrondissement"].value_counts())
                         
             # Agrégation des deux tables a_test et b_test sur "id_enqueteur"
             data_arr_qg = a_test.join(b_test, how="outer", lsuffix="_collecte", rsuffix="_distribution")
@@ -929,8 +931,9 @@ def main():
                 st.subheader(traduire_texte(" progression réelle par arrondissemnt",lang))
                 
                 
-                make_multi_progress_bar(data_arr_qg['arrondissement'],data_arr_qg['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=600)
-            
+                make_multi_progress_bar_echart(data_arr_qg['arrondissement'],data_arr_qg['progression'],colors=palette[0:11],titre=traduire_texte("Progression par arrondissement",lang),height=600, cle="gdksjh")
+                
+
             st.header("EVOLUTION DE LA COLLECTE")
             data_evolution=data.copy()
             data_evolution["Date"] = data_evolution["Date"].astype(str)
