@@ -837,7 +837,7 @@ def main():
                     
             with col[1]:
                 
-                make_multi_progress_bar_echart(data_enq['id_enqueteur'],data_enq['progression'],colors=palette[0:11],titre=traduire_texte("Progression par Enqueteur",lang),height=300)
+                make_multi_progress_bar(data_enq['id_enqueteur'],data_enq['progression'],colors=palette[0:11],titre=traduire_texte("Progression par Enqueteur",lang),height=300)
                 create_crossed_bar_chart(user_data, "id_enqueteur", "Statut", title="Statut des questionnaires", colors=["#41be0f","#e78608","#0b58e6"],width="105%", height="500px",orientation="vertical",)
             c5=st.columns(3)
             with c5[0]:
