@@ -672,6 +672,7 @@ def main():
         
        
         data=pd.read_excel("data_collected.xlsx")
+        data=data.drop_duplicates()
         fichier=Path("data_collected.xlsx")
         date_up_date = datetime.fromtimestamp(fichier.stat().st_mtime)
         
