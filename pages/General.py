@@ -672,7 +672,6 @@ def main():
         data=pd.read_excel("data_collected.xlsx")
         #data=data.drop_duplicates(["id_menage","Duree_interview"])
         data=data.drop_duplicates(["id_menage","Duree_interview"])
-        data
         data["Date"]=data["Date"].dt.date
         data['arrondissement'] = data['arrondissement'].str.replace('Yaounde', 'Yaoundé', regex=False)
         fichier=Path("data_collected.xlsx")
