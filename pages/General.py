@@ -668,10 +668,10 @@ def main():
         
         # ===================================================
         
-       
         data=pd.read_excel("data_collected.xlsx")
-        #data=data.drop_duplicates(["id_menage","Duree_interview"])
-        data=data.drop_duplicates(["id_menage","Duree_interview"])
+        data=data.drop("Unnamed: 0",axis=1)
+        data=data.drop_duplicates()
+        #data=data.drop_duplicates(["id_menage","Duree_interview","arrondissement"])
         data["Date"]=data["Date"].dt.date
         data['arrondissement'] = data['arrondissement'].str.replace('Yaounde', 'Yaoundé', regex=False)
         fichier=Path("data_collected.xlsx")
@@ -687,6 +687,7 @@ def main():
         # Créer la variable good_hh
         data['good_hh'] = (data['distance_m'] > 100).astype(int)
 
+        
         data_rep=pd.read_excel("Repartition.xlsx",sheet_name="Repatition")
         data_rep['arrondissement'] = data_rep['arrondissement'].str.replace('Yaounde', 'Yaoundé', regex=False)
         data["Rejets_superviseur"]=data["Rejets_superviseur"].map({1:"Rejeté par les controleur", 0: "Approuvé par le Controleur"})
