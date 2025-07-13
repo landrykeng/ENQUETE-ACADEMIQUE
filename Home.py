@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-import_users_from_excel()
+#import_users_from_excel()
 
 # Ajout de la police Google Fonts et augmentation de la taille de police globale
 st.markdown("""
