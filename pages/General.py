@@ -669,7 +669,7 @@ def main():
         # ===================================================
         
         data=pd.read_excel("data_collected.xlsx")
-        data=data.drop("Unnamed: 0",axis=1)
+        #data=data.drop("Unnamed: 0",axis=1)
         data=data.drop_duplicates()
         #data=data.drop_duplicates(["id_menage","Duree_interview","arrondissement"])
         data["Date"]=data["Date"].dt.date
@@ -940,7 +940,7 @@ def main():
             st.header("EVOLUTION DE LA COLLECTE")
             data_evolution=data.copy()
             data_evolution["Date"] = data_evolution["Date"].astype(str)
-            create_crossed_bar_chart(data_evolution, "Date", "Statut", title="evolution",width="100%", height="500px",orientation="vertical",)
+            create_crossed_bar_chart(data_evolution, "Date", "Questionnaire", title="evolution",width="100%", height="500px",orientation="vertical",)
             
             enq_for_heat_map=st.multiselect(traduire_texte("Sélectionner un (des) arrondissement (s)",lang),data["arrondissement"].unique(),default=data["arrondissement"].unique(), key="Enq_for_map")
            
